@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.6 -->
+  <object class="GtkHeaderBar" id="main-header">
+    <property name="can_focus">False</property>
+    <property name="visible">True</property>
+    <property name="show-close-button">True</property>
+    <property name="title" translatable="yes">Pocket</property>
+  </object>
+  <object class="GtkGrid" id="main-grid">
+    <property name="can_focus">False</property>
+    <property name="visible">True</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <placeholder/>
+    </child>
+  </object>
+</interface>

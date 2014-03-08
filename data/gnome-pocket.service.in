@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=gnome-pocket
+Exec=@pkgdatadir@/gnome-pocket

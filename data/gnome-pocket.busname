@@ -1,0 +1,11 @@
+[Unit]
+# Optional
+Description=gnome-pocket
+# Optional (obviously)
+Documentation=https://github.com/felipeborges/gnome-pocket
+
+[BusName]
+# Optional
+Name=gnome-pocket
+# Optional
+Service=gnome-pocket.service

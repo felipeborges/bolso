@@ -1,0 +1,11 @@
+<schemalist gettext-domain="gnome-pocket">
+  <schema id="gnome-pocket" path="/gnome-pocket/">
+    <key name="dummy" type="b">
+      <default>true</default>
+      <summary>Dummy key</summary>
+      <description>
+	Dummy description
+      </description>
+    </key>
+  </schema>
+</schemalist>

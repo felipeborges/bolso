@@ -1,0 +1,8 @@
+[type: gettext/glade]data/app-menu.ui
+[type: gettext/glade]data/main.ui
+data/gnome-pocket.desktop.in
+data/gnome-pocket.appdata.xml.in
+data/gnome-pocket.gschema.xml
+src/main.js
+
+
