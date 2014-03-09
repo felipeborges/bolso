@@ -1,0 +1,131 @@
+/*
+ * Copyright (c) 2014 Felipe Borges <felipe10borges@gmail.com>.
+ *
+ * Gnome Pocket is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.
+ *
+ * Gnome Pocket is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with Gnome Documents; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
+
+const GObject = imports.gi.GObject;
+const Goa = imports.gi.Goa;
+const Lang = imports.lang;
+const Rest = imports.gi.Rest;
+
+function authenticate(callback) {
+    let client = Goa.Client.new_sync(null);
+    let accounts = client.get_accounts();
+
+    accounts.forEach(Lang.bind(this, function(obj) {
+        if (!obj.get_account())
+            return;
+
+        let account = obj.get_account();
+        if (account.provider_type == "pocket") {
+            let oauth2 = obj.get_oauth2_based();
+
+            oauth2.call_get_access_token(null, Lang.bind(this,
+                function(source, res) {
+                    try {
+                        let token = oauth2.call_get_access_token_finish(res);
+                        callback(oauth2.client_id, token[1]);
+                    } catch (e) {
+                        callback(null);
+                    }
+            }));
+        }
+    }));
+}
+
+const Api = new Lang.Class({
+    Name: 'Api',
+
+    _init: function(consumer_key, access_token) {
+        this.parent();
+
+        this.consumer_key = consumer_key;
+        this.access_token = access_token;
+
+        this.proxy = Rest.Proxy.new("http://getpocket.com/", false);
+    },
+
+    _newCall: function() {
+        let newCall = this.proxy.new_call();
+        newCall.set_method("POST");
+        newCall.add_param("consumer_key", this.consumer_key);
+        newCall.add_param("access_token", this.access_token);
+        newCall.add_param("detailType", "complete");
+
+        return newCall;
+    },
+
+    add: function(url) {
+        let addCall = this._newCall();
+        addCall.set_function("v3/add");
+        addCall.add_param("url", url);
+
+        addCall.invoke_async();
+    },
+
+    getBaseRetrieveCall: function(callback) {
+        let getCall = this._newCall();
+        getCall.set_function("v3/get");
+
+        return getCall;
+    },
+
+    getRecentAsync: function(count, callback) {
+        let recentCall = this.getBaseRetrieveCall();
+        recentCall.add_param("count", count.toString());
+
+        recentCall.invoke_async(null, Lang.bind(this, function(proxyCall) {
+            try {
+                let jsonResponse = JSON.parse(proxyCall.get_payload());
+                callback(jsonResponse.list);
+            } catch (e) {
+                log(e + recentCall.get_status_message());
+            }
+        }));
+    },
+
+    getLastFavoritesAsync: function(count, callback) {
+        let favoritesCall = this.getBaseRetrieveCall();
+        favoritesCall.add_param("count", count.toString());
+        favoritesCall.add_param("favorite", "1");
+
+        favoritesCall.invoke_async(null, Lang.bind(this, function(proxyCall) {
+            try {
+                let jsonResponse = JSON.parse(proxyCall.get_payload());
+                callback(jsonResponse.list);
+            } catch (e) {
+                log(e + recentCall.get_status_message());
+            }
+        }));
+    },
+
+    getArchiveAsync: function(count, callback) {
+        let favoritesCall = this.getBaseRetrieveCall();
+        favoritesCall.add_param("count", count.toString());
+        favoritesCall.add_param("state", "archive");
+
+        favoritesCall.invoke_async(null, Lang.bind(this, function(proxyCall) {
+            try {
+                let jsonResponse = JSON.parse(proxyCall.get_payload());
+                callback(jsonResponse.list);
+            } catch (e) {
+                log(e + recentCall.get_status_message());
+            }
+        }));
+    },
+
+});

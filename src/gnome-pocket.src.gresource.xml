@@ -2,8 +2,11 @@
 <gresources>
   <gresource prefix="/gnome-pocket/js">
     <file>application.js</file>
+    <file>articles.js</file>
+    <file>pocket.js</file>
     <file>params.js</file>
     <file>util.js</file>
+    <file>views.js</file>
     <file>window.js</file>
   </gresource>
 </gresources>

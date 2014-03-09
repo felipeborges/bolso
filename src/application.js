@@ -30,8 +30,15 @@ const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
 
+const Articles = imports.articles;
+const Pocket = imports.pocket;
 const Util = imports.util;
 const Window = imports.window;
+
+let pocketApi = null;
+let articles = {};
+
+const QUERY_SIZE = 20;
 
 function initEnvironment() {
     window.getApp = function() {
@@ -73,6 +80,33 @@ const Application = new Lang.Class({
                          [{ name: 'quit',
                             activate: this._onQuit }]);
         this._initAppMenu();
+
+        articles = new Articles.Articles();
+        Pocket.authenticate(Lang.bind(this, function(consumer_key, access_token) {
+            pocketApi = new Pocket.Api(consumer_key, access_token);
+        }));
+
+        GLib.idle_add(200, this._retrieveArticles);
+    },
+
+    _retrieveArticles: function() {
+        pocketApi.getRecentAsync(QUERY_SIZE, Lang.bind(this, function(list) {
+            for (let idx in list) {
+                articles.addItem(Articles.Collections.RECENT, new Articles.Item(list[idx]));
+            }
+        }));
+
+        pocketApi.getLastFavoritesAsync(QUERY_SIZE, Lang.bind(this, function(list) {
+            for (let idx in list) {
+                articles.addItem(Articles.Collections.FAVORITES, new Articles.Item(list[idx]));
+            }
+        }));
+
+        pocketApi.getArchiveAsync(QUERY_SIZE, Lang.bind(this, function(list) {
+            for (let idx in list) {
+                articles.addItem(Articles.Collections.ARCHIVE, new Articles.Item(list[idx]));
+            }
+        }));
     },
 
     vfunc_activate: function() {

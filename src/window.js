@@ -23,7 +23,9 @@ const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
 const Params = imports.params;
 
+const Articles = imports.articles;
 const Util = imports.util;
+const Views = imports.views;
 
 const MainWindow = new Lang.Class({
     Name: 'MainWindow',
@@ -31,8 +33,8 @@ const MainWindow = new Lang.Class({
 
     _init: function(params) {
         params = Params.fill(params, { title: GLib.get_application_name(),
-                                       default_width: 640,
-                                       default_height: 480 });
+                                       default_width: 887,
+                                       default_height: 640 });
         this.parent(params);
 
         this._searchActive = false;
@@ -44,7 +46,29 @@ const MainWindow = new Lang.Class({
         let builder = new Gtk.Builder();
         builder.add_from_resource('/gnome-pocket/main.ui');
 
-        this.set_titlebar(builder.get_object('main-header'));
+        let header_bar = builder.get_object('header');
+        this.set_titlebar(header_bar);
+
+        let stack = new Gtk.Stack({
+            transition_type: Gtk.StackTransitionType.CROSSFADE,
+            transition_duration: 200,
+            visible: true,
+        });
+        this.add(stack);
+
+        let stack_switcher = builder.get_object('stack-switcher');
+        stack_switcher.set_stack(stack);
+        header_bar.set_custom_title(stack_switcher);
+
+        let panels = [];
+
+        panels.push(new Views.OverView(Articles.Collections.RECENT, 'Home', header_bar));
+        panels.push(new Views.OverView(Articles.Collections.FAVORITES, 'Favorites', header_bar));
+        panels.push(new Views.OverView(Articles.Collections.ARCHIVE, 'Archive', header_bar));
+
+        panels.forEach(function(view) {
+            stack.add_titled(view.widget, view.title, view.title);
+        });
 
         let grid = builder.get_object('main-grid');
         this.add(grid);
