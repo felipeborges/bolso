@@ -21,6 +21,7 @@ const GLib = imports.gi.GLib;
 const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
+const WebKit = imports.gi.WebKit;
 
 const Application = imports.application;
 
@@ -33,21 +34,11 @@ const OverView = new Lang.Class({
 
         this.widget = new Gtk.ScrolledWindow();
 
-        let grid = new Gtk.Grid();
         this.listBox = new Gtk.ListBox();
-        grid.add(this.listBox);
-        this.widget.add(grid);
-
-        let spinner = new Gtk.Spinner();
-        spinner.start();
-        grid.add(spinner);
+        this.widget.add(this.listBox);
 
         Application.articles.connect("item-added",
-            Lang.bind(this, function(source, collection, item) {
-                spinner.hide();
-
-                this._onItemAdded(source, collection, item);
-            }));
+            Lang.bind(this, this._onItemAdded));
 
         this.listBox.connect('row-activated',
             Lang.bind(this, this._onItemActivated));
@@ -56,6 +47,7 @@ const OverView = new Lang.Class({
     },
 
     _onItemAdded: function(source, collection, item) {
+        // check whether the given item belongs to this collection
         if (collection !== this.collection)
             return;
 
@@ -74,5 +66,30 @@ const OverView = new Lang.Class({
     },
 
     _onItemActivated: function(source, row) {
+        Application.articles.setActiveItemById(this.collection, row.get_index());
     }
+});
+
+const Preview = new Lang.Class({
+    Name: 'Preview',
+
+    _init: function(header_bar) {
+        this.header_bar = header_bar;
+
+        this.widget = new Gtk.ScrolledWindow();
+        
+        this._webview = new WebKit.WebView();
+        this.widget.add(this._webview);
+
+        this.widget.show_all();
+
+        Application.articles.connect('active-changed',
+            Lang.bind(this, this._onActiveChanged));
+    },
+
+    _onActiveChanged: function(articles, collection, item) {
+        this.header_bar.set_custom_title(null);
+        this.header_bar.set_title(item.given_title);
+        this._webview.open(item.resolved_url);
+    },
 })

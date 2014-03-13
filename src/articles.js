@@ -77,16 +77,19 @@ const Articles = new Lang.Class({
     Signals: {
         'item-added': {
             param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
-        }
+        },
+        'active-changed': {
+            param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
+        },
     },
 
     _init: function(title) {
         this.parent();
 
-        this._items = {};
-        this._items[Collections.RECENT] = {};
-        this._items[Collections.FAVORITES] = {};
-        this._items[Collections.ARCHIVE] = {};
+        this._items = [];
+        this._items[Collections.RECENT] = [];
+        this._items[Collections.FAVORITES] = [];
+        this._items[Collections.ARCHIVE] = [];
 
         this._activeItem = null;
         this._title = null;
@@ -100,8 +103,28 @@ const Articles = new Lang.Class({
     },
 
     addItem: function(collection, item) {
-        this._items[collection][item.item_id] = item;
+        this._items[collection].push(item);
 
         this.emit('item-added', collection, item);
-    }
+    },
+
+    getItemById: function(collection, id) {
+        return this._items[collection][id];
+    },
+
+    setActiveItem: function(collection, item) {
+        if (item != this._activeItem) {
+            this._activeItem = item;
+            this.emit('active-changed', collection, this._activeItem);
+
+            return true;
+        }
+
+        return false;
+    },
+
+    setActiveItemById: function(collection, id) {
+        let item = this.getItemById(collection, id);
+        return this.setActiveItem(collection, item);
+    },
 });

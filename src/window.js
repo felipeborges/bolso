@@ -23,6 +23,7 @@ const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
 const Params = imports.params;
 
+const Application = imports.application;
 const Articles = imports.articles;
 const Util = imports.util;
 const Views = imports.views;
@@ -37,27 +38,27 @@ const MainWindow = new Lang.Class({
                                        default_height: 640 });
         this.parent(params);
 
-        this._searchActive = false;
+        this._searchActive = true;
 
         Util.initActions(this,
                          [{ name: 'about',
                             activate: this._about }]);
 
         let builder = new Gtk.Builder();
-        builder.add_from_resource('/gnome-pocket/main.ui');
+        builder.add_from_resource('/gnome-pocket/headerbar.ui');
 
         let header_bar = builder.get_object('header');
         this.set_titlebar(header_bar);
 
-        let stack = new Gtk.Stack({
+        this.stack = new Gtk.Stack({
             transition_type: Gtk.StackTransitionType.CROSSFADE,
             transition_duration: 200,
             visible: true,
         });
-        this.add(stack);
+        this.add(this.stack);
 
         let stack_switcher = builder.get_object('stack-switcher');
-        stack_switcher.set_stack(stack);
+        stack_switcher.set_stack(this.stack);
         header_bar.set_custom_title(stack_switcher);
 
         let panels = [];
@@ -66,12 +67,16 @@ const MainWindow = new Lang.Class({
         panels.push(new Views.OverView(Articles.Collections.FAVORITES, 'Favorites', header_bar));
         panels.push(new Views.OverView(Articles.Collections.ARCHIVE, 'Archive', header_bar));
 
-        panels.forEach(function(view) {
-            stack.add_titled(view.widget, view.title, view.title);
-        });
+        panels.forEach(Lang.bind(this, function(view) {
+            this.stack.add_titled(view.widget, view.title, view.title);
+        }));
 
-        let grid = builder.get_object('main-grid');
-        this.add(grid);
+        let preview = new Views.Preview(header_bar);
+        this.stack.add_named(preview.widget, "preview");
+
+        Application.articles.connect('active-changed', Lang.bind(this, function() {
+            this.stack.set_visible_child_name("preview");
+        }));
     },
 
     _about: function() {

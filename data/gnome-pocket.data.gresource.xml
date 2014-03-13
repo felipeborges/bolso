@@ -3,7 +3,7 @@
   <gresource prefix="/gnome-pocket">
     <file preprocess="xml-stripblanks">app-menu.ui</file>
     <file preprocess="xml-stripblanks">listbox.ui</file>
-    <file preprocess="xml-stripblanks">main.ui</file>
+    <file preprocess="xml-stripblanks">headerbar.ui</file>
     <file>application.css</file>
   </gresource>
 </gresources>

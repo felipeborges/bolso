@@ -11,12 +11,4 @@
       </object>
     </child>
   </object>
-  <object class="GtkGrid" id="main-grid">
-    <property name="can_focus">False</property>
-    <property name="visible">True</property>
-    <property name="orientation">vertical</property>
-    <child>
-      <placeholder/>
-    </child>
-  </object>
 </interface>

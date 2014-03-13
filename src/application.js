@@ -36,7 +36,7 @@ const Util = imports.util;
 const Window = imports.window;
 
 let pocketApi = null;
-let articles = {};
+let articles = [];
 
 const QUERY_SIZE = 20;
 
