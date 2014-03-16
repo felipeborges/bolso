@@ -66,6 +66,22 @@ const Item = new Lang.Class({
          */
     },
 
+    getTitle: function() {
+        if (this.given_title) {
+            return this.given_title;
+        }
+
+        return this.resolved_title;
+    },
+
+    getDescription: function() {
+        if (this.excerpt) {
+            return this.excerpt;
+        }
+
+        return this.resolved_url;
+    },
+
     open: function() {
         log("open");
     }

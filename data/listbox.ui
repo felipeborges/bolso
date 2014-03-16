@@ -58,7 +58,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="content-source">
+          <object class="GtkLabel" id="row-excerpt">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">start</property>

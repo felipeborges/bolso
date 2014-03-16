@@ -67,10 +67,10 @@ const OverView = new Lang.Class({
         this.updateThumbnail(item, image);
 
         let label = builder.get_object('row-title');
-        label.set_label(item.given_title);
+        label.set_label(item.getTitle());
 
-        let content = builder.get_object('content-source')
-        content.set_label(item.resolved_url);
+        let content = builder.get_object('row-excerpt')
+        content.set_label(item.getDescription());
 
         this.listBox.add(row);
     },
