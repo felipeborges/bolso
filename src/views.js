@@ -81,15 +81,43 @@ const Preview = new Lang.Class({
         this._webview = new WebKit.WebView();
         this.widget.add(this._webview);
 
-        this.widget.show_all();
-
         Application.articles.connect('active-changed',
-            Lang.bind(this, this._onActiveChanged));
+            Lang.bind(this, function(articles, collection, item) {
+                // if active item is null then propagate the signal
+                if (!item) {
+                    return false;
+                }
+
+                this._onActiveChanged(articles, collection, item);
+                return true;
+            }));
+
+        this.widget.show_all();
     },
 
     _onActiveChanged: function(articles, collection, item) {
         this.header_bar.set_custom_title(null);
         this.header_bar.set_title(item.given_title);
+
+        let backButton = this.addBackButton(collection);
+        this.header_bar.pack_start(backButton);
+        backButton.show();
+
         this._webview.open(item.resolved_url);
     },
+
+    addBackButton: function(collection) {
+        let buttonImage = Gtk.Image.new_from_icon_name('go-previous-symbolic', 1);
+        let button = new Gtk.Button({ image: buttonImage });
+        button.connect('clicked', Lang.bind(this, function() {
+            Application.articles.setActiveItem(collection, null);
+
+            button.destroy();
+
+            // go blank so we don't show last page while loading a new one
+            this._webview.open('about:blank');
+        }));
+
+        return button;
+    }
 })

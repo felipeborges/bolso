@@ -61,6 +61,14 @@ const MainWindow = new Lang.Class({
         stack_switcher.set_stack(this.stack);
         header_bar.set_custom_title(stack_switcher);
 
+        // restore header_bar switcher when not in preview mode
+        this.stack.connect('notify::visible-child-name',
+            Lang.bind(this, function(stack, childName) {
+                if (this.stack.get_visible_child_name() !== "preview") {
+                    header_bar.set_custom_title(stack_switcher);
+                }
+            }));
+
         let panels = [];
 
         panels.push(new Views.OverView(Articles.Collections.RECENT, 'Home', header_bar));
@@ -74,8 +82,14 @@ const MainWindow = new Lang.Class({
         let preview = new Views.Preview(header_bar);
         this.stack.add_named(preview.widget, "preview");
 
-        Application.articles.connect('active-changed', Lang.bind(this, function() {
-            this.stack.set_visible_child_name("preview");
+        Application.articles.connect('active-changed',
+            Lang.bind(this, function(articles, collection, item) {
+                if (item !== null) {
+                    this.stack.set_visible_child_name("preview");
+                    return;
+                }
+
+                this.stack.set_visible_child(panels[collection].widget);
         }));
     },
 
@@ -85,7 +99,7 @@ const MainWindow = new Lang.Class({
               translator_credits: _("translator-credits"),
               program_name: _("Pocket"),
               comments: _("Pocket for GNOME"),
-              copyright: 'Copyright 2014 The Pocket developers',
+              copyright: 'Copyright 2014 The GNOME Pocket developers',
               license_type: Gtk.License.GPL_2_0,
               logo_icon_name: pkg.name,
               version: pkg.version,
