@@ -83,10 +83,16 @@ const Application = new Lang.Class({
 
         articles = new Articles.Articles();
         Pocket.authenticate(Lang.bind(this, function(consumer_key, access_token) {
-            pocketApi = new Pocket.Api(consumer_key, access_token);
-        }));
+            pocketApi = new Pocket.Api();
+            let status = pocketApi.set_credentials(consumer_key, access_token);
 
-        GLib.idle_add(200, this._retrieveArticles);
+            if (status !== Pocket.PocketStatusCodes.REQUEST_SUCCESSFUL) {
+                this._initGettingStarted();
+                return;
+            }
+
+            this._retrieveArticles();
+        }));
     },
 
     _retrieveArticles: function() {
@@ -109,8 +115,32 @@ const Application = new Lang.Class({
         }));
     },
 
+    _initGettingStarted: function() {
+        let dialog = new Gtk.Dialog({ transient_for: this._window,
+                                      modal: true,
+                                      destroy_with_parent: true,
+                                      default_width: 600,
+                                      default_height: 100,
+                                      title: _("Setup your Pocket account"),
+                                      use_header_bar: true });
+        let closeButton = dialog.add_button('gtk-close', Gtk.ResponseType.CLOSE);
+        dialog.set_default_response(Gtk.ResponseType.CLOSE);
+
+        closeButton.connect('button-press-event', Lang.bind(this, function() {
+            dialog.destroy();
+            this._onQuit();
+        }));
+
+        let contentArea = dialog.get_content_area();
+        let label = new Gtk.Label({ label: _("Go to Online Accounts and add a Pocket account.") });
+        contentArea.add(label);
+
+        dialog.show_all();
+    },
+
     vfunc_activate: function() {
-        (new Window.MainWindow({ application: this })).show();
+        this._window = new Window.MainWindow({ application: this });
+        this._window.show();
     },
 
     vfunc_shutdown: function() {

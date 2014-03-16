@@ -31,32 +31,54 @@ function authenticate(callback) {
             return;
 
         let account = obj.get_account();
-        if (account.provider_type == "pocket") {
-            let oauth2 = obj.get_oauth2_based();
-
-            oauth2.call_get_access_token(null, Lang.bind(this,
-                function(source, res) {
-                    try {
-                        let token = oauth2.call_get_access_token_finish(res);
-                        callback(oauth2.client_id, token[1]);
-                    } catch (e) {
-                        callback(null);
-                    }
-            }));
+        if (account.provider_type !== "pocket") {
+            return;
         }
+
+        let oauth2 = obj.get_oauth2_based();
+        let consumer_key = oauth2.client_id;
+        oauth2.call_get_access_token(null, Lang.bind(this, function(src, res) {
+            try {
+                let [success, token] = oauth2.call_get_access_token_finish(res);
+                callback(consumer_key, token);
+            } catch (e) {
+                callback(consumer_key);
+                log(e);
+            }
+        }));
     }));
+}
+
+const PocketStatusCodes = {
+    REQUEST_SUCCESSFUL: [ 200, _("Request was successful") ],
+    INVALID_REQUEST: [ 400, _("Invalid request, please make sure you follow the documentation for proper syntax") ],
+    AUTH_ERROR: [ 401, _("Problem authenticating the user") ],
+    ACCESS_DENIED: [ 403, _("User was authenticated, but access denied due to lack of permission or rate limiting") ],
+    SERVER_DOWN: [ 503, _("Pocket's sync server is down for scheduled maintenance.") ]
 }
 
 const Api = new Lang.Class({
     Name: 'Api',
 
-    _init: function(consumer_key, access_token) {
+    _init: function() {
         this.parent();
+
+        this.proxy = Rest.Proxy.new("http://getpocket.com/", false);
+    },
+
+    set_credentials: function(consumer_key, access_token) {
+        if (!consumer_key) {
+            return PocketStatusCodes.AUTH_ERROR;
+        }
+
+        if (consumer_key && !access_token) {
+            return PocketStatusCodes.ACCESS_DENIED;
+        }
 
         this.consumer_key = consumer_key;
         this.access_token = access_token;
 
-        this.proxy = Rest.Proxy.new("http://getpocket.com/", false);
+        return PocketStatusCodes.REQUEST_SUCCESSFUL;
     },
 
     _newCall: function() {
