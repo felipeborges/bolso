@@ -17,6 +17,8 @@
  *
  */
 
+const GdkPixbuf = imports.gi.GdkPixbuf;
+const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
@@ -24,6 +26,11 @@ const Lang = imports.lang;
 const WebKit = imports.gi.WebKit;
 
 const Application = imports.application;
+const Util = imports.util;
+
+const FALLBACK_THUMBNAIL = "/gnome-pocket/icons/fallback.jpg";
+const THUMB_WIDTH = 95;
+const THUMB_HEIGHT = 80;
 
 const OverView = new Lang.Class({
     Name: 'Overview',
@@ -56,6 +63,9 @@ const OverView = new Lang.Class({
 
         let row = builder.get_object('item-row');
 
+        let image = builder.get_object('row-image');
+        this.updateThumbnail(item, image);
+
         let label = builder.get_object('row-title');
         label.set_label(item.given_title);
 
@@ -63,6 +73,25 @@ const OverView = new Lang.Class({
         content.set_label(item.resolved_url);
 
         this.listBox.add(row);
+    },
+
+    updateThumbnail: function(item, image) {
+        let fallbackPixbuf = GdkPixbuf.Pixbuf.new_from_resource_at_scale(FALLBACK_THUMBNAIL, THUMB_WIDTH, THUMB_HEIGHT, false);
+
+        if (item.has_image != "1") {
+            image.set_from_pixbuf(fallbackPixbuf);
+            return;
+        }
+
+        let url = item.images[1].src
+        Util.downloadImageAsync(url, Lang.bind(this, function(path) {
+            try {
+                let pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(path, THUMB_WIDTH, THUMB_HEIGHT, false);
+                image.set_from_pixbuf(pixbuf);
+            } catch(e) {
+                image.set_from_pixbuf(fallbackPixbuf);
+            }
+        }));
     },
 
     _onItemActivated: function(source, row) {

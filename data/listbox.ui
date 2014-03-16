@@ -9,10 +9,30 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="hexpand">True</property>
-        <property name="margin_top">4</property>
-        <property name="margin_bottom">4</property>
+        <property name="margin_top">0</property>
+        <property name="margin_bottom">0</property>
         <property name="margin_left">4</property>
         <property name="margin_right">4</property>
+        <child>
+          <object class="GtkImage" id="row-image">
+            <property name="width_request">95</property>
+            <property name="height_request">80</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">center</property>
+            <property name="valign">start</property>
+            <property name="margin_top">0</property>
+            <property name="margin_bottom">0</property>
+            <property name="margin_start">8</property>
+            <property name="margin_end">8</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">0</property>
+            <property name="width">1</property>
+            <property name="height">5</property>
+          </packing>
+        </child>
         <child>
           <object class="GtkBox" id="box1">
             <property name="visible">True</property>

@@ -26,6 +26,7 @@
 
 const Gdk = imports.gi.Gdk;
 const Gio = imports.gi.Gio;
+const GLib = imports.gi.GLib;
 const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
@@ -111,4 +112,41 @@ function loadIcon(iconName, size) {
     return theme.load_icon(iconName,
                            size,
                            Gtk.IconLookupFlags.GENERIC_FALLBACK);
+}
+
+function downloadImageAsync(url, callback) {
+    let stream = Gio.file_new_for_uri(url);
+
+    stream.read_async(GLib.PRIORITY_DEFAULT, null, Lang.bind(this, function(src, res) {
+        let inputStream;
+        try {
+            inputStream = stream.read_finish(res);
+        } catch (e) {
+            callback(false);
+            return;
+        }
+
+        let dirPath = GLib.get_user_cache_dir();
+
+        let basename = stream.get_basename();
+        let path = GLib.build_filenamev([dirPath, "/gnome-pocket/", basename]);
+
+        let out = Gio.file_new_for_path(path);
+        out.replace_async(null, false, Gio.FileCreateFlags.NONE, GLib.PRIORITY_DEFAULT, null,
+            Lang.bind(this, function(src, res) {
+                let outputStream = out.replace_finish(res);
+
+                outputStream.splice_async(inputStream,
+                    Gio.OutputStreamSpliceFlags.CLOSE_SOURCE | Gio.OutputStreamSpliceFlags.CLOSE_TARGET,
+                    GLib.PRIORITY_DEFAULT, null, Lang.bind(this, function(src, res) {
+                        try {
+                            outputStream.splice_finish(res);
+                        } catch (e) {
+                            return;
+                        }
+
+                        callback(path);
+                }));
+            }));
+        }));
 }
