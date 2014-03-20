@@ -21,6 +21,7 @@ const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
 
 const Application = imports.application;
+const Articles = imports.articles;
 
 const Toolbar = new Lang.Class({
     Name: 'Toolbar',
@@ -44,10 +45,23 @@ const Toolbar = new Lang.Class({
         this._previewActionsButton.connect('toggled', Lang.bind(this, function() {
             this._actionsPopover.show();
         }));
+
+        this._deleteButton = builder.get_object('delete-button');
+        this._deleteButton.connect('clicked', Lang.bind(this, this._onDeleteButtonClicked));
     },
 
     _onBackButtonClicked: function() {
         let activeCollection = Application.articles.getActiveCollection();
+        Application.articles.setActiveItem(activeCollection, null);
+    },
+
+    _onDeleteButtonClicked: function() {
+        let activeCollection = Application.articles.getActiveCollection();
+        let activeItem = Application.articles.getActiveItem();
+
+        Application.articles.removeItem(activeCollection, activeItem);
+
+        // Go back to overview
         Application.articles.setActiveItem(activeCollection, null);
     },
 

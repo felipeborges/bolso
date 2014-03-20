@@ -169,5 +169,19 @@ const Api = new Lang.Class({
                 log(e + archiveCall.get_status_message());
             }
         }));
-    }
+    },
+
+    deleteItemAsync: function(item, callback) {
+        let deleteCall = this.getBaseModifyCall();
+        deleteCall.add_param("actions", "[{ \"action\" : \"delete\", \"item_id\" :" + item.item_id + "}]" );
+
+        deleteCall.invoke_async(null, Lang.bind(this, function(proxyCall) {
+            try {
+                let jsonResponse = JSON.parse(proxyCall.get_payload());
+                callback(jsonResponse);
+            } catch (e) {
+                log(e + archiveCall.get_status_message());
+            }
+        }))
+    },
 });

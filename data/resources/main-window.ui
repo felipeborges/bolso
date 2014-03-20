@@ -65,7 +65,7 @@
         <property name="margin">6</property>
         <property name="column_spacing">6</property>
         <child>
-          <object class="GtkButton" id="archive-button">
+          <object class="GtkToggleButton" id="archive-button">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="valign">center</property>

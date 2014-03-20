@@ -33,7 +33,7 @@ const Item = new Lang.Class({
     _init: function(item) {
         this.parent();
 
-        this.id = null;
+        this.item_id = null;
         this.resolved_url = "";
         this.given_title = "";
         this.resolved_title = null;
@@ -50,6 +50,10 @@ const Item = new Lang.Class({
         this.authors = null;
         this.images = null;
         this.videos = null;
+
+        /* Index used for local reference. Not to be confused with item_id which
+         * is how Pocket references an Item */
+        this.index = null;
 
         this.populateFromJsonObject(item);
     },
@@ -94,6 +98,9 @@ const Articles = new Lang.Class({
         'item-added': {
             param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
         },
+        'item-removed': {
+            param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
+        },
         'active-changed': {
             param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
         },
@@ -120,6 +127,7 @@ const Articles = new Lang.Class({
     },
 
     addItem: function(collection, item) {
+        item.index = this._items[collection].length;
         this._items[collection].push(item);
 
         this.emit('item-added', collection, item);
@@ -153,4 +161,30 @@ const Articles = new Lang.Class({
     getActiveItem: function() {
         return this._activeItem;
     },
+
+    removeItemById: function(collection, id) {
+        let item = this._items[collection][id];
+
+        if (item) {
+            delete this._items[collection][id];
+            this.emit('item-removed', collection, item);
+        }
+    },
+
+    removeItem: function(collection, item) {
+        this.removeItemById(collection, item.index);
+    },
+
+    moveItemById: function(from, destination, id) {
+        let item = this._items[from][id];
+
+        if (item) {
+            this.removeItemById(from, id);
+            this.addItem(destination, item);
+        }
+    },
+
+    moveItem: function(from, destination, item) {
+        this.moveItemById(from, destination, item.index);
+    }
 });
