@@ -104,6 +104,9 @@ const Articles = new Lang.Class({
         'item-archived': {
             param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
         },
+        'item-favorited': {
+            param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
+        },
         'active-changed': {
             param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
         },
@@ -178,17 +181,32 @@ const Articles = new Lang.Class({
         this.removeItemById(collection, item.index);
     },
 
-    archiveItemById: function(from, destination, id) {
-        let item = this._items[from][id];
+    archiveItemById: function(collection, id) {
+        let item = this._items[collection][id];
 
         if (item) {
-            delete this._items[from][id];
-            this.emit('item-archived', from, item);
-            this.addItem(destination, item);
+            if (collection == Collections.RECENT) {
+                delete this._items[collection][id];
+            }
+            this.emit('item-archived', collection, item);
+            this.addItem(Collections.ARCHIVE, item);
         }
     },
 
-    archiveItem: function(from, destination, item) {
-        this.archiveItemById(from, destination, item.index);
+    archiveItem: function(from, item) {
+        this.archiveItemById(from, item.index);
+    },
+
+    favoriteItemById: function(collection, id) {
+        let item = this._items[collection][id];
+
+        if (item) {
+            this.emit('item-favorited', collection, item);
+            this.addItem(Collections.FAVORITES, item);
+        }
+    },
+
+    favoriteItem: function(collection, item) {
+        this.favoriteItemById(collection, item.index);
     }
 });

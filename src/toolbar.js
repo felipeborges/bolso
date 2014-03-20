@@ -51,6 +51,9 @@ const Toolbar = new Lang.Class({
 
         this._deleteButton = builder.get_object('delete-button');
         this._deleteButton.connect('clicked', Lang.bind(this, this._onDeleteButtonClicked));
+
+        this._favoriteButton = builder.get_object('favorite-button');
+        this._favoriteButton.connect('clicked', Lang.bind(this, this._onFavoriteButtonToggled));
     },
 
     _onBackButtonClicked: function() {
@@ -62,7 +65,7 @@ const Toolbar = new Lang.Class({
         let activeCollection = Application.articles.getActiveCollection();
         let activeItem = Application.articles.getActiveItem();
 
-        Application.articles.archiveItem(activeCollection, Articles.Collections.ARCHIVE, activeItem);
+        Application.articles.archiveItem(activeCollection, activeItem);
 
         // Go back to overview
         Application.articles.setActiveItem(activeCollection, null);
@@ -76,6 +79,13 @@ const Toolbar = new Lang.Class({
 
         // Go back to overview
         Application.articles.setActiveItem(activeCollection, null);
+    },
+
+    _onFavoriteButtonToggled: function() {
+        let activeCollection = Application.articles.getActiveCollection();
+        let activeItem = Application.articles.getActiveItem();
+
+        Application.articles.favoriteItem(activeCollection, activeItem);
     },
 
     set_overview_mode: function() {

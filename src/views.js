@@ -55,6 +55,9 @@ const OverView = new Lang.Class({
         Application.articles.connect("item-archived",
             Lang.bind(this, this._onItemArchived));
 
+        Application.articles.connect("item-favorited",
+            Lang.bind(this, this._onItemFavorited));
+
         this.listBox.connect('row-activated',
             Lang.bind(this, this._onItemActivated));
 
@@ -102,6 +105,15 @@ const OverView = new Lang.Class({
             if (res) {
                 this._removeSelectedRow();
             }
+        }));
+    },
+
+    _onItemFavorited: function(source, collection, item) {
+        if (collection !== this.collection)
+            return;
+
+        Application.pocketApi.modifyAsync("favorite", item, Lang.bind(this, function(res) {
+            return;
         }));
     },
 

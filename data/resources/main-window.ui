@@ -103,7 +103,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="favorite-button">
+          <object class="GtkToggleButton" id="favorite-button">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="valign">center</property>
