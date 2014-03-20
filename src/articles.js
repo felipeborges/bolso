@@ -148,5 +148,9 @@ const Articles = new Lang.Class({
 
     getActiveCollection: function() {
         return this._activeCollection;
-    }
+    },
+
+    getActiveItem: function() {
+        return this._activeItem;
+    },
 });

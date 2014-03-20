@@ -25,6 +25,7 @@ const Params = imports.params;
 
 const Application = imports.application;
 const Articles = imports.articles;
+const Toolbar = imports.toolbar;
 const Util = imports.util;
 const Views = imports.views;
 
@@ -44,42 +45,37 @@ const MainWindow = new Lang.Class({
                          [{ name: 'about',
                             activate: this._about }]);
 
-        let builder = new Gtk.Builder();
-        builder.add_from_resource('/gnome-pocket/resources/headerbar.ui');
-
-        let header_bar = builder.get_object('header');
+        this._toolbar = new Toolbar.Toolbar();
+        let header_bar = this._toolbar.header_bar;
         this.set_titlebar(header_bar);
 
-        this.stack = new Gtk.Stack({
-            transition_type: Gtk.StackTransitionType.CROSSFADE,
-            transition_duration: 200,
-            visible: true,
-        });
+        let builder = new Gtk.Builder();
+        builder.add_from_resource('/gnome-pocket/resources/main-window.ui');
+
+        this.stack = builder.get_object('view-stack');
         this.add(this.stack);
 
-        let stack_switcher = builder.get_object('stack-switcher');
-        stack_switcher.set_stack(this.stack);
-        header_bar.set_custom_title(stack_switcher);
+        this._toolbar.stack_switcher.set_stack(this.stack);
 
         // restore header_bar switcher when not in preview mode
         this.stack.connect('notify::visible-child-name',
             Lang.bind(this, function(stack, childName) {
                 if (this.stack.get_visible_child_name() !== "preview") {
-                    header_bar.set_custom_title(stack_switcher);
+                    this._toolbar.set_overview_mode();
                 }
             }));
 
         let panels = [];
 
-        panels.push(new Views.OverView(Articles.Collections.RECENT, 'Home', header_bar));
-        panels.push(new Views.OverView(Articles.Collections.FAVORITES, 'Favorites', header_bar));
-        panels.push(new Views.OverView(Articles.Collections.ARCHIVE, 'Archive', header_bar));
+        panels[0] = new Views.OverView(Articles.Collections.RECENT, 'Home', this._toolbar);
+        panels[1] = new Views.OverView(Articles.Collections.FAVORITES, 'Favorites', this._toolbar);
+        panels[2] = new Views.OverView(Articles.Collections.ARCHIVE, 'Archive', this._toolbar);
 
         panels.forEach(Lang.bind(this, function(view) {
             this.stack.add_titled(view.widget, view.title, view.title);
         }));
 
-        let preview = new Views.Preview(header_bar);
+        let preview = new Views.Preview(this._toolbar);
         this.stack.add_named(preview.widget, "preview");
 
         Application.articles.connect('active-changed',

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.6 -->
+  <object class="GtkHeaderBar" id="header-bar">
+    <property name="can_focus">False</property>
+    <property name="visible">True</property>
+    <property name="show-close-button">True</property>
+    <child>
+      <object class="GtkButton" id="back-button">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="valign">center</property>
+        <property name="sensitive">True</property>
+        <style>
+          <class name="image-button" />
+        </style>
+        <child>
+          <object class="GtkImage" id="back-button-image">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="icon-name">go-previous-symbolic</property>
+            <property name="icon-size">1</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child type="title">
+      <object class="GtkStackSwitcher" id="stack-switcher">
+        <property name="visible">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToggleButton" id="preview-actions-button">
+        <property name="visible">False</property>
+        <property name="can_focus">False</property>
+        <property name="valign">center</property>
+        <property name="sensitive">True</property>
+        <style>
+          <class name="image-button" />
+        </style>
+        <child>
+          <object class="GtkImage" id="actions-button-image">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="icon-name">view-list-symbolic</property>
+            <property name="icon-size">1</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="pack_type">end</property>
+      </packing>
+    </child>
+  </object>
+  <object class="GtkPopover" id="preview-action-buttons">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkGrid" id="preview-action-buttons-grid">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="margin">6</property>
+        <property name="column_spacing">6</property>
+        <child>
+          <object class="GtkButton" id="archive-button">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="valign">center</property>
+            <property name="sensitive">True</property>
+            <style>
+              <class name="image-button" />
+            </style>
+            <child>
+              <object class="GtkImage" id="archive-button-image">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="icon-name">object-select-symbolic</property>
+                <property name="icon-size">1</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="delete-button">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="valign">center</property>
+            <property name="sensitive">True</property>
+            <style>
+              <class name="image-button" />
+            </style>
+            <child>
+              <object class="GtkImage" id="delete-button-image">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="icon-name">user-trash-symbolic</property>
+                <property name="icon-size">1</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="favorite-button">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="valign">center</property>
+            <property name="sensitive">True</property>
+            <style>
+              <class name="image-button" />
+            </style>
+            <child>
+              <object class="GtkImage" id="favorite-button-image">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="icon-name">bookmark-new-symbolic</property>
+                <property name="icon-size">1</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkStack" id="view-stack">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="transition_type">crossfade</property>
+    <property name="transition_duration">200</property>
+    <child>
+      <placeholder/>
+    </child>
+  </object>
+</interface>
