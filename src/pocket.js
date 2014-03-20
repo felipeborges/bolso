@@ -106,11 +106,23 @@ const Api = new Lang.Class({
         return getCall;
     },
 
-    getBaseModifyCall: function(callback) {
+    modifyAsync: function(action, item, callback) {
         let modifyCall = this._newCall();
         modifyCall.set_function("v3/send");
 
-        return modifyCall;
+        modifyCall.add_param("actions", "[{ \"action\" : \"" + action + "\", \"item_id\" :" + item.item_id + "}]" );
+        modifyCall.invoke_async(null, Lang.bind(this, function(proxyCall) {
+            try {
+                let jsonResponse = JSON.parse(proxyCall.get_payload());
+                if (jsonResponse['action_results'] == "true") {
+                    callback(true);
+                } else {
+                    callback(false);
+                }
+            } catch (e) {
+                callback(false);
+            }
+        }));
     },
 
     getRecentAsync: function(count, callback) {
@@ -155,33 +167,5 @@ const Api = new Lang.Class({
                 log(e + recentCall.get_status_message());
             }
         }));
-    },
-
-    archiveItemAsync: function(item, callback) {
-        let archiveCall = this.getBaseModifyCall();
-        archiveCall.add_param("actions", "[{ \"action\" : \"archive\", \"item_id\" :" + item.item_id + "}]" );
-
-        archiveCall.invoke_async(null, Lang.bind(this, function(proxyCall) {
-            try {
-                let jsonResponse = JSON.parse(proxyCall.get_payload());
-                callback(jsonResponse);
-            } catch (e) {
-                log(e + archiveCall.get_status_message());
-            }
-        }));
-    },
-
-    deleteItemAsync: function(item, callback) {
-        let deleteCall = this.getBaseModifyCall();
-        deleteCall.add_param("actions", "[{ \"action\" : \"delete\", \"item_id\" :" + item.item_id + "}]" );
-
-        deleteCall.invoke_async(null, Lang.bind(this, function(proxyCall) {
-            try {
-                let jsonResponse = JSON.parse(proxyCall.get_payload());
-                callback(jsonResponse);
-            } catch (e) {
-                log(e + archiveCall.get_status_message());
-            }
-        }))
     },
 });

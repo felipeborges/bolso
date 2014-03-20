@@ -101,7 +101,7 @@ const Articles = new Lang.Class({
         'item-removed': {
             param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
         },
-        'item-moved': {
+        'item-archived': {
             param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
         },
         'active-changed': {
@@ -178,17 +178,17 @@ const Articles = new Lang.Class({
         this.removeItemById(collection, item.index);
     },
 
-    moveItemById: function(from, destination, id) {
+    archiveItemById: function(from, destination, id) {
         let item = this._items[from][id];
 
         if (item) {
             delete this._items[from][id];
-            this.emit('item-moved', from, item);
+            this.emit('item-archived', from, item);
             this.addItem(destination, item);
         }
     },
 
-    moveItem: function(from, destination, item) {
-        this.moveItemById(from, destination, item.index);
+    archiveItem: function(from, destination, item) {
+        this.archiveItemById(from, destination, item.index);
     }
 });

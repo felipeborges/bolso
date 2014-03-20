@@ -62,7 +62,7 @@ const Toolbar = new Lang.Class({
         let activeCollection = Application.articles.getActiveCollection();
         let activeItem = Application.articles.getActiveItem();
 
-        Application.articles.moveItem(activeCollection, Articles.Collections.ARCHIVE, activeItem);
+        Application.articles.archiveItem(activeCollection, Articles.Collections.ARCHIVE, activeItem);
 
         // Go back to overview
         Application.articles.setActiveItem(activeCollection, null);

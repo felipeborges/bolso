@@ -52,8 +52,8 @@ const OverView = new Lang.Class({
         Application.articles.connect("item-removed",
             Lang.bind(this, this._onItemRemoved));
 
-        Application.articles.connect("item-moved",
-            Lang.bind(this, this._onItemMoved));
+        Application.articles.connect("item-archived",
+            Lang.bind(this, this._onItemArchived));
 
         this.listBox.connect('row-activated',
             Lang.bind(this, this._onItemActivated));
@@ -87,24 +87,27 @@ const OverView = new Lang.Class({
         if (collection !== this.collection)
             return;
 
-        Application.pocketApi.deleteItemAsync(item, Lang.bind(this, function(json) {
-            if (json['action_results'] == "true") {
-                let row = this.listBox.get_selected_row();
-                this.listBox.remove(row);
+        Application.pocketApi.modifyAsync("delete", item, Lang.bind(this, function(res) {
+            if (res) {
+                this._removeSelectedRow();
             }
         }));
     },
 
-    _onItemMoved: function(source, collection, item) {
+    _onItemArchived: function(source, collection, item) {
         if (collection !== this.collection)
             return;
 
-        Application.pocketApi.archiveItemAsync(item, Lang.bind(this, function(json) {
-            if (json['action_results'] == "true") {
-                let row = this.listBox.get_selected_row();
-                this.listBox.remove(row);
+        Application.pocketApi.modifyAsync("archive", item, Lang.bind(this, function(res) {
+            if (res) {
+                this._removeSelectedRow();
             }
         }));
+    },
+
+    _removeSelectedRow: function() {
+        let row = this.listBox.get_selected_row();
+        this.listBox.remove(row);
     },
 
     updateThumbnail: function(item, image) {
