@@ -52,6 +52,9 @@ const OverView = new Lang.Class({
         Application.articles.connect("item-removed",
             Lang.bind(this, this._onItemRemoved));
 
+        Application.articles.connect("item-moved",
+            Lang.bind(this, this._onItemMoved));
+
         this.listBox.connect('row-activated',
             Lang.bind(this, this._onItemActivated));
 
@@ -85,6 +88,18 @@ const OverView = new Lang.Class({
             return;
 
         Application.pocketApi.deleteItemAsync(item, Lang.bind(this, function(json) {
+            if (json['action_results'] == "true") {
+                let row = this.listBox.get_selected_row();
+                this.listBox.remove(row);
+            }
+        }));
+    },
+
+    _onItemMoved: function(source, collection, item) {
+        if (collection !== this.collection)
+            return;
+
+        Application.pocketApi.archiveItemAsync(item, Lang.bind(this, function(json) {
             if (json['action_results'] == "true") {
                 let row = this.listBox.get_selected_row();
                 this.listBox.remove(row);

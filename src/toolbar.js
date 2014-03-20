@@ -46,12 +46,25 @@ const Toolbar = new Lang.Class({
             this._actionsPopover.show();
         }));
 
+        this._archiveButton = builder.get_object('archive-button');
+        this._archiveButton.connect('toggled', Lang.bind(this, this._onArchiveButtonToggled));
+
         this._deleteButton = builder.get_object('delete-button');
         this._deleteButton.connect('clicked', Lang.bind(this, this._onDeleteButtonClicked));
     },
 
     _onBackButtonClicked: function() {
         let activeCollection = Application.articles.getActiveCollection();
+        Application.articles.setActiveItem(activeCollection, null);
+    },
+
+    _onArchiveButtonToggled: function() {
+        let activeCollection = Application.articles.getActiveCollection();
+        let activeItem = Application.articles.getActiveItem();
+
+        Application.articles.moveItem(activeCollection, Articles.Collections.ARCHIVE, activeItem);
+
+        // Go back to overview
         Application.articles.setActiveItem(activeCollection, null);
     },
 
