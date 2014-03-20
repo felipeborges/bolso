@@ -59,7 +59,7 @@ const OverView = new Lang.Class({
             return;
 
         let builder = new Gtk.Builder();
-        builder.add_from_resource('/gnome-pocket/listbox.ui');
+        builder.add_from_resource('/gnome-pocket/resources/listbox.ui');
 
         let row = builder.get_object('item-row');
 
@@ -121,6 +121,7 @@ const Preview = new Lang.Class({
                 return true;
             }));
 
+        this.addButtons();
         this.widget.show_all();
     },
 
@@ -128,25 +129,65 @@ const Preview = new Lang.Class({
         this.header_bar.set_custom_title(null);
         this.header_bar.set_title(item.given_title);
 
-        let backButton = this.addBackButton(collection);
-        this.header_bar.pack_start(backButton);
-        backButton.show();
+        this._backButton.show();
+        this._popoverButton.show();
 
         this._webview.open(item.resolved_url);
     },
 
-    addBackButton: function(collection) {
-        let buttonImage = Gtk.Image.new_from_icon_name('go-previous-symbolic', 1);
-        let button = new Gtk.Button({ image: buttonImage });
-        button.connect('clicked', Lang.bind(this, function() {
-            Application.articles.setActiveItem(collection, null);
+    addButtons: function() {
+        this._backButton = new Gtk.Button({ image: Gtk.Image.new_from_icon_name('go-previous-symbolic', 1) });
+        this._backButton.connect('clicked', Lang.bind(this, this._onBackButtonClicked));
 
-            button.destroy();
+        this.header_bar.pack_start(this._backButton);
 
-            // go blank so we don't show last page while loading a new one
-            this._webview.open('about:blank');
+        // popover
+        let popover = new Gtk.Popover();
+
+        this._archiveButton = this.addArchiveButton();
+        //this._deleteButton = this.addDeleteButton();
+        //this._starButton = this.addFavoriteButton();
+
+        let grid = new Gtk.Grid({ margin: 6,
+                                  column_spacing: 6 });
+        grid.add(this._archiveButton);
+        //grid.add(this._deleteButton);
+        //grid.add(this._starButton);
+        popover.add(grid);
+
+        this._popoverButton = new Gtk.ToggleButton({ image: Gtk.Image.new_from_icon_name('view-list-symbolic', 1) });
+        this._popoverButton.connect('clicked', Lang.bind(this, function() {
+            popover.show_all();
         }));
 
-        return button;
-    }
+        popover.set_relative_to(this._popoverButton);
+        this.header_bar.pack_end(this._popoverButton);
+    },
+
+    _onBackButtonClicked: function() {
+        let activeCollection = Application.articles.getActiveCollection();
+        Application.articles.setActiveItem(activeCollection, null);
+
+        this._backButton.hide();
+        this._popoverButton.hide();
+
+        // go blank so we don't show last page while loading a new one
+        this._webview.open('about:blank');
+    },
+
+    addArchiveButton: function(collection, item) {
+        let button = new Gtk.Button({ image: Gtk.Image.new_from_icon_name('object-select-symbolic', 1) });
+        button.connect('clicked', Lang.bind(this, function() {
+            Application.pocketApi.archiveItemAsync(item,
+                Lang.bind(this, function(json) {
+                    if (json.action_results == "true") {
+                        Application.articles.setActiveItem(collection, null);
+                    }
+                }));
+
+            button.destroy();
+        }));
+        button.show();
+        return button
+    },
 })

@@ -65,16 +65,15 @@ const Application = new Lang.Class({
 
     _initAppMenu: function() {
         let builder = new Gtk.Builder();
-        builder.add_from_resource('/gnome-pocket/app-menu.ui');
+        builder.add_from_resource('/gnome-pocket/resources/app-menu.ui');
 
-        let menu = builder.get_object('app-menu');
-        this.set_app_menu(menu);
+        this.set_app_menu(builder.get_object('app-menu'));
     },
 
     vfunc_startup: function() {
         this.parent();
 
-        Util.loadStyleSheet('/gnome-pocket/application.css');
+        Util.loadStyleSheet('/gnome-pocket/resources/application.css');
 
         Util.initActions(this,
                          [{ name: 'quit',
@@ -93,6 +92,8 @@ const Application = new Lang.Class({
 
             this._retrieveArticles();
         }));
+
+        this._window = new Window.MainWindow({ application: this });
     },
 
     _retrieveArticles: function() {
@@ -139,8 +140,9 @@ const Application = new Lang.Class({
     },
 
     vfunc_activate: function() {
-        this._window = new Window.MainWindow({ application: this });
-        this._window.show();
+        if (this._window) {
+            this._window.present();
+        }
     },
 
     vfunc_shutdown: function() {

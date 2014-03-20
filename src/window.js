@@ -45,7 +45,7 @@ const MainWindow = new Lang.Class({
                             activate: this._about }]);
 
         let builder = new Gtk.Builder();
-        builder.add_from_resource('/gnome-pocket/headerbar.ui');
+        builder.add_from_resource('/gnome-pocket/resources/headerbar.ui');
 
         let header_bar = builder.get_object('header');
         this.set_titlebar(header_bar);

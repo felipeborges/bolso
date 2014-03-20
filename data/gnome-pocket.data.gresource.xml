@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/gnome-pocket">
-    <file preprocess="xml-stripblanks">app-menu.ui</file>
-    <file preprocess="xml-stripblanks">listbox.ui</file>
-    <file preprocess="xml-stripblanks">headerbar.ui</file>
-    <file>application.css</file>
+    <file preprocess="xml-stripblanks">resources/app-menu.ui</file>
+    <file preprocess="xml-stripblanks">resources/listbox.ui</file>
+    <file preprocess="xml-stripblanks">resources/headerbar.ui</file>
+    <file>resources/application.css</file>
     <file>icons/fallback.jpg</file>
   </gresource>
 </gresources>
