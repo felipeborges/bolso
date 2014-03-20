@@ -99,11 +99,18 @@ const Api = new Lang.Class({
         addCall.invoke_async();
     },
 
-    getBaseRetrieveCall: function(callback) {
+    getBaseRetrieveCall: function() {
         let getCall = this._newCall();
         getCall.set_function("v3/get");
 
         return getCall;
+    },
+
+    getBaseModifyCall: function(callback) {
+        let modifyCall = this._newCall();
+        modifyCall.set_function("v3/send");
+
+        return modifyCall;
     },
 
     getRecentAsync: function(count, callback) {
@@ -150,4 +157,17 @@ const Api = new Lang.Class({
         }));
     },
 
+    archiveItemAsync: function(item, callback) {
+        let archiveCall = this.getBaseModifyCall();
+        archiveCall.add_param("actions", "[{ \"action\" : \"archive\", \"item_id\" :" + item.item_id + "}]" );
+
+        archiveCall.invoke_async(null, Lang.bind(this, function(proxyCall) {
+            try {
+                let jsonResponse = JSON.parse(proxyCall.get_payload());
+                callback(jsonResponse);
+            } catch (e) {
+                log(e + archiveCall.get_status_message());
+            }
+        }));
+    }
 });

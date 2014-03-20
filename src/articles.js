@@ -107,6 +107,7 @@ const Articles = new Lang.Class({
         this._items[Collections.FAVORITES] = [];
         this._items[Collections.ARCHIVE] = [];
 
+        this._activeCollection = null;
         this._activeItem = null;
         this._title = null;
 
@@ -130,8 +131,9 @@ const Articles = new Lang.Class({
 
     setActiveItem: function(collection, item) {
         if (item != this._activeItem) {
+            this._activeCollection = collection;
             this._activeItem = item;
-            this.emit('active-changed', collection, this._activeItem);
+            this.emit('active-changed', this._activeCollection, this._activeItem);
 
             return true;
         }
@@ -143,4 +145,8 @@ const Articles = new Lang.Class({
         let item = this.getItemById(collection, id);
         return this.setActiveItem(collection, item);
     },
+
+    getActiveCollection: function() {
+        return this._activeCollection;
+    }
 });
