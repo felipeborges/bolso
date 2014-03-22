@@ -71,11 +71,11 @@ const Item = new Lang.Class({
     },
 
     getTitle: function() {
-        if (this.given_title) {
-            return this.given_title;
+        if (this.resolved_title) {
+            return this.resolved_title;
         }
 
-        return this.resolved_title;
+        return this.given_title;
     },
 
     getDescription: function() {
