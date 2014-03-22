@@ -99,11 +99,15 @@ const Api = new Lang.Class({
         addCall.invoke_async();
     },
 
-    retrieveAsync: function(action, value, count, callback) {
+    retrieveAsync: function(action, value, count, offset, callback) {
         let retrieveCall = this._newCall();
         retrieveCall.set_function("v3/get");
 
         retrieveCall.add_param("count", count.toString());
+        if (offset !== null) {
+            retrieveCall.add_param("offset", offset.toString());
+        }
+
         if ((action !== null) && (value !== null)) {
             retrieveCall.add_param(action, value);
         }
@@ -117,7 +121,7 @@ const Api = new Lang.Class({
                     callback(false);
                 }
             } catch (e) {
-                log(e + recentCall.get_status_message());
+                log(e + retrieveCall.get_status_message());
                 callback(false);
             }
         }));

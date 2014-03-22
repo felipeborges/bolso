@@ -26,6 +26,7 @@ const Lang = imports.lang;
 const WebKit = imports.gi.WebKit;
 
 const Application = imports.application;
+const Articles = imports.articles;
 const Util = imports.util;
 
 const FALLBACK_THUMBNAIL = "/gnome-pocket/icons/fallback.jpg";
@@ -42,6 +43,12 @@ const OverView = new Lang.Class({
         this.title = title;
 
         this.widget = new Gtk.ScrolledWindow();
+        this._scrollbar = this.widget.get_vscrollbar();
+        this._scrollbar.connect("value-changed",
+            Lang.bind(this, this._lazy_loading));
+
+        this._loadingNewItems = false;
+        this._loadedItems = 0;
 
         this.listBox = new Gtk.ListBox();
         this.widget.add(this.listBox);
@@ -84,6 +91,8 @@ const OverView = new Lang.Class({
         content.set_label(item.getDescription());
 
         this.listBox.add(row);
+
+        this._loadedItems++;
     },
 
     _onItemRemoved: function(source, collection, item) {
@@ -143,6 +152,56 @@ const OverView = new Lang.Class({
 
     _onItemActivated: function(source, row) {
         Application.articles.setActiveItemById(this.collection, row.get_index());
+    },
+
+    _load_more_items: function() {
+        this._loadingNewItems = true;
+
+        let action = null;
+        let value = null;
+
+        if (this.collection === Articles.Collections.FAVORITES) {
+            action = "favorite";
+            value = "1";
+        }
+
+        if (this.collection === Articles.Collections.ARCHIVE) {
+            action = "state";
+            value = "archive";
+        }
+
+        Application.pocketApi.retrieveAsync(action, value, Application.QUERY_SIZE,
+            this._loadedItems, Lang.bind(this, function(list) {
+                for (let idx in list) {
+                    Application.articles.addItem(this.collection, new Articles.Item(list[idx]));
+                }
+
+            this.listBox.remove(this._spinnerRow);
+            this._loadingNewItems = false;
+        }));
+    },
+
+    _lazy_loading: function(scrollbar) {
+        if (this._loadingNewItems) {
+            return;
+        }
+
+        let adjustment = scrollbar.get_adjustment();
+        let value = adjustment.get_value();
+        let upper = adjustment.get_upper();
+        let psize = adjustment.get_page_size();
+
+        this._spinnerRow = new Gtk.ListBoxRow();
+        let spinner = new Gtk.Spinner();
+        this._spinnerRow.add(spinner);
+
+        if (value >= (upper - psize)) {
+            spinner.start();
+            this._spinnerRow.show_all();
+            this.listBox.add(this._spinnerRow);
+
+            this._load_more_items();
+        }
     }
 });
 
