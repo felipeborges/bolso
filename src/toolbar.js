@@ -46,14 +46,10 @@ const Toolbar = new Lang.Class({
             this._actionsPopover.show();
         }));
 
+        // preview action buttons
         this._archiveButton = builder.get_object('archive-button');
-        this._archiveButton.connect('toggled', Lang.bind(this, this._onArchiveButtonToggled));
-
         this._deleteButton = builder.get_object('delete-button');
-        this._deleteButton.connect('clicked', Lang.bind(this, this._onDeleteButtonClicked));
-
         this._favoriteButton = builder.get_object('favorite-button');
-        this._favoriteButton.connect('clicked', Lang.bind(this, this._onFavoriteButtonToggled));
     },
 
     _onBackButtonClicked: function() {
@@ -64,6 +60,11 @@ const Toolbar = new Lang.Class({
     _onArchiveButtonToggled: function() {
         let activeCollection = Application.articles.getActiveCollection();
         let activeItem = Application.articles.getActiveItem();
+
+        if (activeItem.isArchived()) {
+            Application.articles.unarchiveItem(activeCollection, activeItem);
+            return;
+        }
 
         Application.articles.archiveItem(activeCollection, activeItem);
 
@@ -85,7 +86,28 @@ const Toolbar = new Lang.Class({
         let activeCollection = Application.articles.getActiveCollection();
         let activeItem = Application.articles.getActiveItem();
 
+        if (activeItem.isFavorite()) {
+            // unfavorite
+            return;
+        }
+
         Application.articles.favoriteItem(activeCollection, activeItem);
+    },
+
+    _setActionButtonsState: function() {
+        let activeItem = Application.articles.getActiveItem();
+
+        if (activeItem.isArchived()) {
+            this._archiveButton.active = true;
+        }
+
+        if (activeItem.isFavorite()) {
+            this._favoriteButton.active = true;
+        }
+
+        this._archiveButton.connect('toggled', Lang.bind(this, this._onArchiveButtonToggled));
+        this._favoriteButton.connect('toggled', Lang.bind(this, this._onFavoriteButtonToggled));
+        this._deleteButton.connect('clicked', Lang.bind(this, this._onDeleteButtonClicked));
     },
 
     set_overview_mode: function() {
@@ -93,14 +115,16 @@ const Toolbar = new Lang.Class({
 
         this._backButton.hide();
         this._previewActionsButton.hide();
-        this._actionsPopover.hide();
     },
 
     set_preview_mode: function() {
         this.header_bar.set_custom_title(null);
         this.header_bar.set_title(Application.articles.getActiveItem().given_title);
 
+        this._setActionButtonsState();
+
         this._backButton.show();
         this._previewActionsButton.show();
+        this._previewActionsButton.active = false;
     }
  })

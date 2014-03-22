@@ -56,7 +56,7 @@
     </child>
   </object>
   <object class="GtkPopover" id="preview-action-buttons">
-    <property name="visible">True</property>
+    <property name="visible">False</property>
     <property name="can_focus">False</property>
     <child>
       <object class="GtkGrid" id="preview-action-buttons-grid">
@@ -70,6 +70,7 @@
             <property name="can_focus">False</property>
             <property name="valign">center</property>
             <property name="sensitive">True</property>
+            <property name="active">False</property>
             <style>
               <class name="image-button" />
             </style>
@@ -108,6 +109,7 @@
             <property name="can_focus">False</property>
             <property name="valign">center</property>
             <property name="sensitive">True</property>
+            <property name="active">False</property>
             <style>
               <class name="image-button" />
             </style>

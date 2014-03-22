@@ -86,6 +86,14 @@ const Item = new Lang.Class({
         return this.resolved_url;
     },
 
+    isArchived: function() {
+        return ((this.status === "1") ? true : false);
+    },
+
+    isFavorite: function() {
+        return ((this.favorite === "1") ? true : false);
+    },
+
     open: function() {
         log("open");
     }
@@ -197,6 +205,11 @@ const Articles = new Lang.Class({
         this.archiveItemById(from, item.index);
     },
 
+    unarchiveItem: function(collection, item) {
+        // To do
+        return;
+    },
+
     favoriteItemById: function(collection, id) {
         let item = this._items[collection][id];
 
@@ -208,5 +221,10 @@ const Articles = new Lang.Class({
 
     favoriteItem: function(collection, item) {
         this.favoriteItemById(collection, item.index);
-    }
+    },
+
+    unfavoriteItem: function(collection, item) {
+        // To do
+        return;
+    },
 });
