@@ -67,7 +67,7 @@ const MainWindow = new Lang.Class({
 
         let panels = [];
 
-        panels[0] = new Views.OverView(Articles.Collections.RECENT, 'Home', this._toolbar);
+        panels[0] = new Views.OverView(Articles.Collections.RECENT, 'My List', this._toolbar);
         panels[1] = new Views.OverView(Articles.Collections.FAVORITES, 'Favorites', this._toolbar);
         panels[2] = new Views.OverView(Articles.Collections.ARCHIVE, 'Archive', this._toolbar);
 
