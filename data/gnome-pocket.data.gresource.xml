@@ -3,6 +3,7 @@
   <gresource prefix="/gnome-pocket">
     <file preprocess="xml-stripblanks">resources/app-menu.ui</file>
     <file preprocess="xml-stripblanks">resources/main-window.ui</file>
+    <file preprocess="xml-stripblanks">resources/save-item-dialog.ui</file>
     <file preprocess="xml-stripblanks">resources/views.ui</file>
     <file>resources/application.css</file>
     <file>icons/fallback.jpg</file>

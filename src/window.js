@@ -43,7 +43,9 @@ const MainWindow = new Lang.Class({
 
         Util.initActions(this,
                          [{ name: 'about',
-                            activate: this._about }]);
+                            activate: this._about },
+                          { name: 'save-item',
+                            activate: this._saveItemDialog }]);
 
         this._toolbar = new Toolbar.Toolbar();
         let header_bar = this._toolbar.header_bar;
@@ -87,6 +89,24 @@ const MainWindow = new Lang.Class({
 
                 this.stack.set_visible_child(panels[collection].widget);
         }));
+    },
+
+    _saveItemDialog: function() {
+        let builder = new Gtk.Builder();
+        builder.add_from_resource('/gnome-pocket/resources/save-item-dialog.ui');
+
+        let dialog = builder.get_object('save-item-dialog');
+
+        let urlEntry = builder.get_object('url-entry');
+        let saveButton = builder.get_object('save-item-button');
+        saveButton.connect('clicked', Lang.bind(this, function() {
+            Application.pocketApi.addAsync(urlEntry.text,
+                Lang.bind(this, function(item) {
+                    Application.articles.addItem(0, new Articles.Item(item));
+                    dialog.destroy();
+                }));
+            }));
+        dialog.show_all();
     },
 
     _about: function() {

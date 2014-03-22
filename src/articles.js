@@ -83,7 +83,11 @@ const Item = new Lang.Class({
             return this.excerpt;
         }
 
-        return this.resolved_url;
+        if (this.resolved_url) {
+            return this.resolved_url;
+        }
+
+        return "";
     },
 
     isArchived: function() {

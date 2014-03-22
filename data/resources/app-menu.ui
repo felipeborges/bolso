@@ -2,6 +2,12 @@
   <menu id="app-menu">
     <section>
       <item>
+        <attribute name="action">win.save-item</attribute>
+        <attribute name="label" translatable="yes">Add new item</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
         <attribute name="action">win.about</attribute>
         <attribute name="label" translatable="yes">About Pocket</attribute>
       </item>

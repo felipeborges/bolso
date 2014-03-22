@@ -91,12 +91,23 @@ const Api = new Lang.Class({
         return newCall;
     },
 
-    add: function(url) {
+    addAsync: function(url, callback) {
         let addCall = this._newCall();
         addCall.set_function("v3/add");
         addCall.add_param("url", url);
 
-        addCall.invoke_async();
+        addCall.invoke_async(null, Lang.bind(this, function(proxyCall) {
+            try {
+                let jsonResponse = JSON.parse(proxyCall.get_payload());
+                if (jsonResponse['status']) {
+                    callback(jsonResponse.item);
+                } else {
+                    callback(false);
+                }
+            } catch(e) {
+                callback(false);
+            }
+        }));
     },
 
     retrieveAsync: function(action, value, count, offset, callback) {
