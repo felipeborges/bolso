@@ -99,11 +99,28 @@ const Api = new Lang.Class({
         addCall.invoke_async();
     },
 
-    getBaseRetrieveCall: function() {
-        let getCall = this._newCall();
-        getCall.set_function("v3/get");
+    retrieveAsync: function(action, value, count, callback) {
+        let retrieveCall = this._newCall();
+        retrieveCall.set_function("v3/get");
 
-        return getCall;
+        retrieveCall.add_param("count", count.toString());
+        if ((action !== null) && (value !== null)) {
+            retrieveCall.add_param(action, value);
+        }
+
+        retrieveCall.invoke_async(null, Lang.bind(this, function(proxyCall) {
+            try {
+                let jsonResponse = JSON.parse(proxyCall.get_payload());
+                if (jsonResponse['status']) {
+                    callback(jsonResponse.list);
+                } else {
+                    callback(false);
+                }
+            } catch (e) {
+                log(e + recentCall.get_status_message());
+                callback(false);
+            }
+        }));
     },
 
     modifyAsync: function(action, item, callback) {
@@ -121,50 +138,6 @@ const Api = new Lang.Class({
                 }
             } catch (e) {
                 callback(false);
-            }
-        }));
-    },
-
-    getRecentAsync: function(count, callback) {
-        let recentCall = this.getBaseRetrieveCall();
-        recentCall.add_param("count", count.toString());
-
-        recentCall.invoke_async(null, Lang.bind(this, function(proxyCall) {
-            try {
-                let jsonResponse = JSON.parse(proxyCall.get_payload());
-                callback(jsonResponse.list);
-            } catch (e) {
-                log(e + recentCall.get_status_message());
-            }
-        }));
-    },
-
-    getLastFavoritesAsync: function(count, callback) {
-        let favoritesCall = this.getBaseRetrieveCall();
-        favoritesCall.add_param("count", count.toString());
-        favoritesCall.add_param("favorite", "1");
-
-        favoritesCall.invoke_async(null, Lang.bind(this, function(proxyCall) {
-            try {
-                let jsonResponse = JSON.parse(proxyCall.get_payload());
-                callback(jsonResponse.list);
-            } catch (e) {
-                log(e + recentCall.get_status_message());
-            }
-        }));
-    },
-
-    getArchiveAsync: function(count, callback) {
-        let favoritesCall = this.getBaseRetrieveCall();
-        favoritesCall.add_param("count", count.toString());
-        favoritesCall.add_param("state", "archive");
-
-        favoritesCall.invoke_async(null, Lang.bind(this, function(proxyCall) {
-            try {
-                let jsonResponse = JSON.parse(proxyCall.get_payload());
-                callback(jsonResponse.list);
-            } catch (e) {
-                log(e + recentCall.get_status_message());
             }
         }));
     },

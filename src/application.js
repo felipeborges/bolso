@@ -97,23 +97,20 @@ const Application = new Lang.Class({
     },
 
     _retrieveArticles: function() {
-        pocketApi.getRecentAsync(QUERY_SIZE, Lang.bind(this, function(list) {
-            for (let idx in list) {
-                articles.addItem(Articles.Collections.RECENT, new Articles.Item(list[idx]));
-            }
-        }));
+        pocketApi.retrieveAsync(null, null, QUERY_SIZE,
+            Lang.bind(this, this._addListToCollection, Articles.Collections.RECENT));
 
-        pocketApi.getLastFavoritesAsync(QUERY_SIZE, Lang.bind(this, function(list) {
-            for (let idx in list) {
-                articles.addItem(Articles.Collections.FAVORITES, new Articles.Item(list[idx]));
-            }
-        }));
+        pocketApi.retrieveAsync("favorite", "1", QUERY_SIZE,
+            Lang.bind(this, this._addListToCollection, Articles.Collections.FAVORITES));
 
-        pocketApi.getArchiveAsync(QUERY_SIZE, Lang.bind(this, function(list) {
-            for (let idx in list) {
-                articles.addItem(Articles.Collections.ARCHIVE, new Articles.Item(list[idx]));
-            }
-        }));
+        pocketApi.retrieveAsync("state", "archive", QUERY_SIZE,
+            Lang.bind(this, this._addListToCollection, Articles.Collections.ARCHIVE));
+    },
+
+    _addListToCollection: function(list, collection) {
+        for (let idx in list) {
+            articles.addItem(collection, new Articles.Item(list[idx]));
+        }
     },
 
     _initGettingStarted: function() {
