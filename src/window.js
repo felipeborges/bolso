@@ -34,9 +34,10 @@ const MainWindow = new Lang.Class({
     Extends: Gtk.ApplicationWindow,
 
     _init: function(params) {
-        params = Params.fill(params, { title: GLib.get_application_name(),
-                                       default_width: 887,
-                                       default_height: 640 });
+        params = Params.fill(params, { title: _("Pocket"),
+                                       width_request: 887,
+                                       height_request: 640,
+                                       window_position: Gtk.WindowPosition.CENTER });
         this.parent(params);
 
         this._searchActive = true;
