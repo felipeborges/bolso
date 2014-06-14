@@ -108,10 +108,10 @@ const Articles = new Lang.Class({
     Extends: GObject.Object,
     Signals: {
         'item-added': {
-            param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
+            param_types: [GObject.TYPE_OBJECT]
         },
         'item-removed': {
-            param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
+            param_types: [GObject.TYPE_OBJECT]
         },
         'item-archived': {
             param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
@@ -120,7 +120,7 @@ const Articles = new Lang.Class({
             param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
         },
         'active-changed': {
-            param_types: [GObject.TYPE_INT, GObject.TYPE_OBJECT]
+            param_types: [GObject.TYPE_OBJECT]
         },
     },
 
@@ -128,9 +128,6 @@ const Articles = new Lang.Class({
         this.parent();
 
         this._items = [];
-        this._items[Collections.RECENT] = [];
-        this._items[Collections.FAVORITES] = [];
-        this._items[Collections.ARCHIVE] = [];
 
         this._activeCollection = null;
         this._activeItem = null;
@@ -144,22 +141,21 @@ const Articles = new Lang.Class({
         return this._title;
     },
 
-    addItem: function(collection, item) {
-        item.index = this._items[collection].length;
-        this._items[collection].push(item);
+    addItem: function(item) {
+        item.index = this._items.length;
+        this._items.push(item);
 
-        this.emit('item-added', collection, item);
+        this.emit('item-added', item);
     },
 
-    getItemById: function(collection, id) {
-        return this._items[collection][id];
+    getItemById: function(id) {
+        return this._items[id];
     },
 
-    setActiveItem: function(collection, item) {
+    setActiveItem: function(item) {
         if (item != this._activeItem) {
-            this._activeCollection = collection;
             this._activeItem = item;
-            this.emit('active-changed', this._activeCollection, this._activeItem);
+            this.emit('active-changed', this._activeItem);
 
             return true;
         }
@@ -167,9 +163,9 @@ const Articles = new Lang.Class({
         return false;
     },
 
-    setActiveItemById: function(collection, id) {
-        let item = this.getItemById(collection, id);
-        return this.setActiveItem(collection, item);
+    setActiveItemById: function(id) {
+        let item = this.getItemById(id);
+        return this.setActiveItem(item);
     },
 
     getActiveCollection: function() {

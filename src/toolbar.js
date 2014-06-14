@@ -53,20 +53,18 @@ const Toolbar = new Lang.Class({
     },
 
     _onBackButtonClicked: function() {
-        let activeCollection = Application.articles.getActiveCollection();
         Application.articles.setActiveItem(activeCollection, null);
     },
 
     _onArchiveButtonToggled: function() {
-        let activeCollection = Application.articles.getActiveCollection();
         let activeItem = Application.articles.getActiveItem();
 
         if (activeItem.isArchived()) {
-            Application.articles.unarchiveItem(activeCollection, activeItem);
+            Application.articles.unarchiveItem(activeItem);
             return;
         }
 
-        Application.articles.archiveItem(activeCollection, activeItem);
+        Application.articles.archiveItem(activeItem);
 
         // Go back to overview
         Application.articles.setActiveItem(activeCollection, null);

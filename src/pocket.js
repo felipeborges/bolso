@@ -34,7 +34,6 @@ function authenticate(callback) {
         if (account.provider_type !== "pocket") {
             return;
         }
-
         let oauth2 = obj.get_oauth2_based();
         let consumer_key = oauth2.client_id;
         oauth2.call_get_access_token(null, Lang.bind(this, function(src, res) {
@@ -62,8 +61,6 @@ const Api = new Lang.Class({
 
     _init: function() {
         this.parent();
-
-        this.proxy = Rest.Proxy.new("http://getpocket.com/", false);
     },
 
     set_credentials: function(consumer_key, access_token) {
@@ -82,7 +79,8 @@ const Api = new Lang.Class({
     },
 
     _newCall: function() {
-        let newCall = this.proxy.new_call();
+        let proxy = Rest.Proxy.new("http://getpocket.com/", false);
+        let newCall = proxy.new_call();
         newCall.set_method("POST");
         newCall.add_param("consumer_key", this.consumer_key);
         newCall.add_param("access_token", this.access_token);

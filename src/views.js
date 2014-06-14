@@ -39,8 +39,8 @@ const OverView = new Lang.Class({
     _init: function(collection, title, toolbar) {
         this._toolbar = toolbar;
 
-        this.collection = collection;
         this.title = title;
+        this.collection = collection;
 
         this.widget = new Gtk.ScrolledWindow();
         this._scrollbar = this.widget.get_vscrollbar();
@@ -71,10 +71,23 @@ const OverView = new Lang.Class({
         this.widget.show_all();
     },
 
-    _onItemAdded: function(source, collection, item) {
-        // check whether the given item belongs to this collection
-        if (collection !== this.collection)
+    _itemBelongsToCollection: function(item) {
+        switch (this.collection) {
+            case Articles.Collections.FAVORITES:
+                return item.isFavorite();
+            case Articles.Collections.ARCHIVE:
+                return item.isArchived();
+            case Articles.Collections.RECENT:
+                return !item.isArchived();
+            default:
+                return false;
+        }
+    },
+
+    _onItemAdded: function(source, item) {
+        if (!this._itemBelongsToCollection(item)) {
             return;
+        }
 
         let builder = new Gtk.Builder();
         builder.add_from_resource('/gnome-pocket/resources/views.ui');
@@ -173,7 +186,7 @@ const OverView = new Lang.Class({
         Application.pocketApi.retrieveAsync(action, value, Application.QUERY_SIZE,
             this._loadedItems, Lang.bind(this, function(list) {
                 for (let idx in list) {
-                    Application.articles.addItem(this.collection, new Articles.Item(list[idx]));
+                    Application.articles.addItem(new Articles.Item(list[idx]));
                 }
 
             this.listBox.remove(this._spinnerRow);

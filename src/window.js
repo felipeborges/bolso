@@ -82,13 +82,13 @@ const MainWindow = new Lang.Class({
         this.stack.add_named(preview.widget, "preview");
 
         Application.articles.connect('active-changed',
-            Lang.bind(this, function(articles, collection, item) {
+            Lang.bind(this, function(articles, item) {
                 if (item !== null) {
                     this.stack.set_visible_child_name("preview");
                     return;
                 }
 
-                this.stack.set_visible_child(panels[collection].widget);
+                this.stack.set_visible_child(panels[0].widget);
         }));
     },
 

@@ -97,19 +97,19 @@ const Application = new Lang.Class({
     },
 
     _retrieveArticles: function() {
-        pocketApi.retrieveAsync(null, null, QUERY_SIZE, 0,
-            Lang.bind(this, this._addListToCollection, Articles.Collections.RECENT));
+        pocketApi.retrieveAsync("state", "unread", QUERY_SIZE, 0,
+            Lang.bind(this, this._addListToCollection));
 
         pocketApi.retrieveAsync("favorite", "1", QUERY_SIZE, 0,
-            Lang.bind(this, this._addListToCollection, Articles.Collections.FAVORITES));
+            Lang.bind(this, this._addListToCollection));
 
         pocketApi.retrieveAsync("state", "archive", QUERY_SIZE, 0,
-            Lang.bind(this, this._addListToCollection, Articles.Collections.ARCHIVE));
+            Lang.bind(this, this._addListToCollection));
     },
 
-    _addListToCollection: function(list, collection) {
+    _addListToCollection: function(list) {
         for (let idx in list) {
-            articles.addItem(collection, new Articles.Item(list[idx]));
+            articles.addItem(new Articles.Item(list[idx]));
         }
     },
 
