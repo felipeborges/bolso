@@ -51,10 +51,7 @@ const Application = new Lang.Class({
     Extends: Gtk.Application,
 
     _init: function() {
-        this.parent({ application_id: 'com.github.felipeborges.Pocket',
-                      flags: pkg.appFlags });
-        if (this.flags & Gio.ApplicationFlags.IS_SERVICE)
-            this.inactivity_timeout = 60000;
+        this.parent({ application_id: 'com.github.felipeborges.Pocket' });
 
         GLib.set_application_name(_("Pocket"));
     },
