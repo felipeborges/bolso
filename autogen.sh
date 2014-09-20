@@ -4,7 +4,7 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-ACLOCAL_FLAGS="${ACLOCAL_FLAGS}"
+ACLOCAL_FLAGS="-I gnome-pocket ${ACLOCAL_FLAGS}"
 PKG_NAME="gnome-pocket"
 
 test -f $srcdir/configure.ac || {
@@ -18,6 +18,8 @@ which gnome-autogen.sh || {
     echo "your OS vendor's package manager)."
     exit 1
 }
+
+git submodule update --init --recursive
 
 (cd "$srcdir" ;
 test -d m4 || mkdir m4/ ;
