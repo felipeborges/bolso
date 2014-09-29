@@ -53,7 +53,7 @@ const MainWindow = new Lang.Class({
         this.set_titlebar(header_bar);
 
         let builder = new Gtk.Builder();
-        builder.add_from_resource('/gnome-pocket/resources/main-window.ui');
+        builder.add_from_resource('/bolso/resources/main-window.ui');
 
         this.stack = builder.get_object('view-stack');
         this.add(this.stack);
@@ -94,7 +94,7 @@ const MainWindow = new Lang.Class({
 
     _saveItemDialog: function() {
         let builder = new Gtk.Builder();
-        builder.add_from_resource('/gnome-pocket/resources/save-item-dialog.ui');
+        builder.add_from_resource('/bolso/resources/save-item-dialog.ui');
 
         let dialog = builder.get_object('save-item-dialog');
 
@@ -112,15 +112,15 @@ const MainWindow = new Lang.Class({
 
     _about: function() {
         let aboutDialog = new Gtk.AboutDialog(
-            { authors: [ 'Felipe Borges <felipeborges@src.gnome.org>' ],
+            { authors: [ 'Felipe Borges <felipeborges@gnome.org>' ],
               translator_credits: _("translator-credits"),
-              program_name: _("Pocket"),
-              comments: _("Pocket for GNOME"),
-              copyright: 'Copyright 2014 The GNOME Pocket developers',
+              program_name: _("Bolso"),
+              comments: _("A Read it Later app for GNOME"),
+              copyright: 'Copyright 2014 The Bolso developers',
               license_type: Gtk.License.GPL_2_0,
               logo_icon_name: pkg.name,
               version: pkg.version,
-              website: 'https://github.com/felipeborges/gnome-pocket',
+              website: 'https://github.com/felipeborges/bolso',
               wrap_license: true,
               modal: true,
               transient_for: this

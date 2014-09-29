@@ -1,18 +1,18 @@
-nodist_bin_SCRIPTS = gnome-pocket
-nodist_pkgdata_SCRIPTS = gnome-pocket
+nodist_bin_SCRIPTS = bolso 
+nodist_pkgdata_SCRIPTS = bolso
 
-resource_files = $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) --generate-dependencies $(srcdir)/gnome-pocket.src.gresource.xml)
-gnome-pocket.src.gresource: gnome-pocket.src.gresource.xml $(resource_files)
+resource_files = $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) --generate-dependencies $(srcdir)/bolso.src.gresource.xml)
+bolso.src.gresource: bolso.src.gresource.xml $(resource_files)
 	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --target=$@ --sourcedir=$(srcdir) $<
 
 resourcedir = $(pkgdatadir)
-resource_DATA = gnome-pocket.src.gresource
+resource_DATA = bolso.src.gresource
 
 # Legacy, until we can depend on package.js provided by gjs
 jsdir = $(pkgdatadir)
 dist_js_DATA = package.js
 
-gnome-pocket: gnome-pocket.in
+bolso: bolso.in
 	$(AM_V_GEN) sed \
 		-e "s|[@]GJS@|$(GJS)|g" \
 		-e "s|[@]PACKAGE_VERSION@|$(PACKAGE_VERSION)|g" \
@@ -22,7 +22,7 @@ gnome-pocket: gnome-pocket.in
 		$< > $@
 	@chmod +x $@
 
-gnome-pocket: gnome-pocket.in
+bolso: bolso.in
 	$(AM_V_GEN) sed \
 		-e "s|[@]GJS@|$(GJS)|g" \
 		-e "s|[@]PACKAGE_VERSION@|$(PACKAGE_VERSION)|g" \
@@ -33,14 +33,14 @@ gnome-pocket: gnome-pocket.in
 	@chmod +x $@
 
 EXTRA_DIST = \
-	gnome-pocket.in \
-	gnome-pocket.in \
-	gnome-pocket.src.gresource.xml \
+	bolso.in \
+	bolso.in \
+	bolso.src.gresource.xml \
 	$(resource_files)
 
 CLEANFILES = \
-	gnome-pocket \
-	gnome-pocket \
-	gnome-pocket.src.gresource
+	bolso \
+	bolso \
+	bolso.src.gresource
 
 -include $(top_srcdir)/git.mk

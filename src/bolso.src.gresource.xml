@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/gnome-pocket/js">
+  <gresource prefix="/bolso/js">
     <file>application.js</file>
     <file>articles.js</file>
     <file>pocket.js</file>

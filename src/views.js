@@ -29,7 +29,7 @@ const Application = imports.application;
 const Articles = imports.articles;
 const Util = imports.util;
 
-const FALLBACK_THUMBNAIL = "/gnome-pocket/icons/fallback.jpg";
+const FALLBACK_THUMBNAIL = "/bolso/icons/fallback.jpg";
 const THUMB_WIDTH = 95;
 const THUMB_HEIGHT = 80;
 
@@ -90,7 +90,7 @@ const OverView = new Lang.Class({
         }
 
         let builder = new Gtk.Builder();
-        builder.add_from_resource('/gnome-pocket/resources/views.ui');
+        builder.add_from_resource('/bolso/resources/views.ui');
 
         let row = builder.get_object('item-row');
 

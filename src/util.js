@@ -129,7 +129,7 @@ function downloadImageAsync(url, callback) {
         let dirPath = GLib.get_user_cache_dir();
 
         let basename = stream.get_basename();
-        let path = GLib.build_filenamev([dirPath, "/gnome-pocket/", basename]);
+        let path = GLib.build_filenamev([dirPath, "/bolso/", basename]);
 
         let out = Gio.file_new_for_path(path);
         out.replace_async(null, false, Gio.FileCreateFlags.NONE, GLib.PRIORITY_DEFAULT, null,

@@ -1,0 +1,11 @@
+[Unit]
+# Optional
+Description=bolso
+# Optional (obviously)
+Documentation=https://github.com/felipeborges/bolso
+
+[BusName]
+# Optional
+Name=bolso
+# Optional
+Service=bolso.service

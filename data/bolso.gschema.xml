@@ -1,5 +1,5 @@
-<schemalist gettext-domain="gnome-pocket">
-  <schema id="gnome-pocket" path="/gnome-pocket/">
+<schemalist gettext-domain="bolso">
+  <schema id="bolso" path="/bolso/">
     <key name="dummy" type="b">
       <default>true</default>
       <summary>Dummy key</summary>

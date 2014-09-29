@@ -19,12 +19,12 @@ MAINTAINERCLEANFILES = \
 
 GITIGNOREFILES = .anjuta .anjuta_sym_db.db m4/ rpms/
 
-distdir = gnome-pocket-$(VERSION)
+distdir = bolso-$(VERSION)
 
 rpmdefines = \
-	--define "_name gnome-pocket" \
+	--define "_name bolso" \
 	--define "_version $(PACKAGE_VERSION)" \
-	--define "_distdir gnome-pocket" \
+	--define "_distdir bolso" \
 	--define "_sourcedir $(abs_builddir)" \
 	--define "_specdir $(abs_srcdir)" \
 	--define "_builddir $(abs_builddir)/rpms" \
@@ -35,11 +35,11 @@ rpm: dist
 	@rm -fR $(builddir)/rpms
 	@mkdir $(builddir)/rpms
 	env -i PATH=/usr/bin/:/bin SHELL=$(SHELL) HOSTNAME=$${HOSTNAME} HOME=$${HOME} \
-	rpmbuild $(rpmdefines) -ba $(srcdir)/gnome-pocket.spec
+	rpmbuild $(rpmdefines) -ba $(srcdir)/bolso.spec
 
 clean-local:
 	rm -fR $(builddir)/rpms
 
-EXTRA_DIST = gnome-pocket.spec
+EXTRA_DIST = bolso.spec
 
 include $(top_srcdir)/git.mk

@@ -1,8 +1,8 @@
 AC_PREREQ(2.63)
-AC_INIT([gnome-pocket], [0.1],
-        [felipeborges@src.gnome.org],
-        [gnome-pocket],
-        [https://github.com/felipeborges/gnome-pocket])
+AC_INIT([bolso], [0.1],
+        [felipeborges@gnome.org],
+        [bolso],
+        [https://github.com/felipeborges/bolso])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])

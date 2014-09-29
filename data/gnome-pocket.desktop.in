@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-_Name=Pocket
-_Comment=Pocket for GNOME
-Icon=gnome-pocket
-Exec=gapplication launch gnome-pocket
-DBusActivatable=true
-StartupNotify=true

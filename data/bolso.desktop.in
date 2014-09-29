@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+_Name=Bolso
+_Comment=A Read it Later app for GNOME
+Icon=bolso
+Exec=gapplication launch bolso
+DBusActivatable=true
+StartupNotify=true

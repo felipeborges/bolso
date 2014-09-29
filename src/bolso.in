@@ -1,6 +1,6 @@
 #!@GJS@
 imports.searchPath.push("@pkgdatadir@");
-imports.package.init({ name: "gnome-pocket",
+imports.package.init({ name: "bolso",
                        version: "@PACKAGE_VERSION@",
                        prefix: "@prefix@",
                        libdir: "@libdir@" });

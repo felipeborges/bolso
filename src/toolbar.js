@@ -28,7 +28,7 @@ const Toolbar = new Lang.Class({
 
     _init: function() {
         let builder = new Gtk.Builder();
-        builder.add_from_resource('/gnome-pocket/resources/main-window.ui');
+        builder.add_from_resource('/bolso/resources/main-window.ui');
 
         this.header_bar = builder.get_object('header-bar');
 

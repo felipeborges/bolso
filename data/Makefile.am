@@ -2,28 +2,28 @@
 # 5 different directory declarations
 SUBDIRS = icons
 
-resource_files = $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) --generate-dependencies $(srcdir)/gnome-pocket.data.gresource.xml)
-gnome-pocket.data.gresource: gnome-pocket.data.gresource.xml $(resource_files)
+resource_files = $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) --generate-dependencies $(srcdir)/bolso.data.gresource.xml)
+bolso.data.gresource: bolso.data.gresource.xml $(resource_files)
 	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --target=$@ --sourcedir=$(srcdir) $<
 
 resourcedir = $(pkgdatadir)
-resource_DATA = gnome-pocket.data.gresource
+resource_DATA = bolso.data.gresource
 
 appsdir = $(datadir)/applications
-apps_DATA = gnome-pocket.desktop
+apps_DATA = bolso.desktop
 
 @INTLTOOL_DESKTOP_RULE@
 
-gsettings_SCHEMAS = gnome-pocket.gschema.xml
+gsettings_SCHEMAS = bolso.gschema.xml
 
 @GSETTINGS_RULES@
 
 appdatadir = $(datadir)/appdata
-appdata_DATA = gnome-pocket.appdata.xml
+appdata_DATA = bolso.appdata.xml
 
 @INTLTOOL_XML_RULE@
 
-gnome-pocket.service: gnome-pocket.service.in
+bolso.service: bolso.service.in
 	$(AM_V_GEN) sed \
 		-e "s|[@]pkgdatadir@|$(pkgdatadir)|g" \
 		-e "s|[@]pkglibdir@|$(pkglibdir)|g" \
@@ -31,20 +31,20 @@ gnome-pocket.service: gnome-pocket.service.in
 		$< > $@
 
 servicedir = $(datadir)/dbus-1/services
-service_DATA = gnome-pocket.service
+service_DATA = bolso.service
 
 EXTRA_DIST = \
-	gnome-pocket.desktop.in \
-	gnome-pocket.service.in \
-	gnome-pocket.data.gresource.xml \
+	bolso.desktop.in \
+	bolso.service.in \
+	bolso.data.gresource.xml \
 	$(gsettings_SCHEMAS) \
-	gnome-pocket.appdata.xml.in \
+	bolso.appdata.xml.in \
 	$(resource_files)
 
 CLEANFILES = \
-	gnome-pocket.service \
-	gnome-pocket.data.gresource \
-	gnome-pocket.appdata.xml \
+	bolso.service \
+	bolso.data.gresource \
+	bolso.appdata.xml \
 	$(apps_DATA) \
 	*.valid \
 	gschemas.compiled

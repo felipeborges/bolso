@@ -62,7 +62,7 @@ const Application = new Lang.Class({
 
     _initAppMenu: function() {
         let builder = new Gtk.Builder();
-        builder.add_from_resource('/gnome-pocket/resources/app-menu.ui');
+        builder.add_from_resource('/bolso/resources/app-menu.ui');
 
         this.set_app_menu(builder.get_object('app-menu'));
     },
@@ -70,7 +70,7 @@ const Application = new Lang.Class({
     vfunc_startup: function() {
         this.parent();
 
-        Util.loadStyleSheet('/gnome-pocket/resources/application.css');
+        Util.loadStyleSheet('/bolso/resources/application.css');
 
         Util.initActions(this,
                          [{ name: 'quit',

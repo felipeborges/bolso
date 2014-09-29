@@ -5,11 +5,11 @@ srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
 ACLOCAL_FLAGS="-I gnome-pocket ${ACLOCAL_FLAGS}"
-PKG_NAME="gnome-pocket"
+PKG_NAME="bolso"
 
 test -f $srcdir/configure.ac || {
     echo -n "**Error**: Directory "\`$srcdir\'" does not look like the"
-    echo " top-level gnome-pocket directory"
+    echo " top-level bolso directory"
     exit 1
 }
 
