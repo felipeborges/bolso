@@ -1,6 +1,6 @@
-ACLOCAL_AMFLAGS = -I m4 -I gnome-pocket ${ACLOCAL_FLAGS}
+ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = po gnome-pocket data src
+SUBDIRS = po data src
 
 MAINTAINERCLEANFILES = \
 	$(srcdir)/INSTALL \
