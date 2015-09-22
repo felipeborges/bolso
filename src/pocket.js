@@ -79,7 +79,7 @@ const Api = new Lang.Class({
     },
 
     _newCall: function() {
-        let proxy = Rest.Proxy.new("http://getpocket.com/", false);
+        let proxy = Rest.Proxy.new("https://getpocket.com/", false);
         let newCall = proxy.new_call();
         newCall.set_method("POST");
         newCall.add_param("consumer_key", this.consumer_key);
