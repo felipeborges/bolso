@@ -36,7 +36,8 @@ PKG_CHECK_MODULES([DEPS], [gdk-3.0
                            gio-2.0
                            glib-2.0
                            gobject-2.0
-                           gtk+-3.0])
+                           gtk+-3.0
+                           webkit2gtk-4.0 ])
 
 AC_PATH_PROG([GJS],[gjs])
 

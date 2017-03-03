@@ -18,26 +18,81 @@
  */
 
 const GLib = imports.gi.GLib;
+const Gio = imports.gi.Gio;
 const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
-const Params = imports.params;
+const WebKit = imports.gi.WebKit;
 
 const Application = imports.application;
 const Articles = imports.articles;
-const Toolbar = imports.toolbar;
+const Store = imports.store;
 const Util = imports.util;
 const Views = imports.views;
 
-const MainWindow = new Lang.Class({
-    Name: 'MainWindow',
+const STATE = {
+    ARTICLE_VIEW: 0,
+    COLLECTION_VIEW: 1,
+    EMPTY_VIEW: 2,
+};
+
+const Window = new Lang.Class({
+    Name: 'Window',
     Extends: Gtk.ApplicationWindow,
+    Properties: {
+      'state': GObject.ParamSpec.int('state', 'State',
+            'Which widgets should the app present.',
+            GObject.ParamFlags.READWRITE,
+            STATE.ARTICLE_VIEW, STATE.EMPTY_VIEW,
+            STATE.COLLECTION_VIEW),
+    },
+    Template: 'resource:///bolso/resources/window.ui',
+    InternalChildren: [
+      'stack',
+      'emptyState',
+      'goBackButton',
+      'collectionView',
+      'articleView',
+      'titleBar',
+      'stackSwitcher',
+      'articleTitle',
+
+      'myListView',
+      'archiveView',
+      'favoritesView',
+      'articleViewSW',
+    ],
+
+    set state(s) {
+        this._state = s;
+
+        switch (this._state) {
+            case STATE.ARTICLE_VIEW:
+                this._stack.set_visible_child(this._articleView);
+                this._titleBar.set_visible_child(this._articleTitle);
+                this._goBackButton.show();
+                this._webview.show();
+                break;
+            case STATE.COLLECTION_VIEW:
+                this._stack.set_visible_child(this._collectionView);
+                this._goBackButton.hide();
+                this._titleBar.set_visible_child(this._stackSwitcher);
+                this._stackSwitcher.set_sensitive(true);
+                break;
+            case STATE.EMPTY_VIEW:
+                this._stack.set_visible_child(this._emptyState);
+                this._goBackButton.hide();
+                this._titleBar.set_visible_child(this._stackSwitcher);
+                this._stackSwitcher.set_sensitive(false);
+                break;
+        }
+    },
+
+    get state() {
+        return this._state;
+    },
 
     _init: function(params) {
-        params = Params.fill(params, { title: _("Pocket"),
-                                       width_request: 887,
-                                       height_request: 640,
-                                       window_position: Gtk.WindowPosition.CENTER });
         this.parent(params);
 
         this._searchActive = true;
@@ -48,66 +103,37 @@ const MainWindow = new Lang.Class({
                           { name: 'save-item',
                             activate: this._saveItemDialog }]);
 
-        this._toolbar = new Toolbar.Toolbar();
-        let header_bar = this._toolbar.header_bar;
-        this.set_titlebar(header_bar);
+        /* Default state */
+        this.state = STATE.COLLECTION_VIEW;
 
-        let builder = new Gtk.Builder();
-        builder.add_from_resource('/bolso/resources/main-window.ui');
+        /* FIXME: connect buttons in the template file instead. */
+        this._goBackButton.connect('clicked', this.showCollectionView.bind(this));
 
-        this.stack = builder.get_object('view-stack');
-        this.add(this.stack);
+        let store = Store.getDefault();
 
-        this._toolbar.stack_switcher.set_stack(this.stack);
+        this._myListView.bind_model(store.mylist);
+        this._myListView.connect('item-activated', this.viewArticle.bind(this));
 
-        // restore header_bar switcher when not in preview mode
-        this.stack.connect('notify::visible-child-name',
-            Lang.bind(this, function(stack, childName) {
-                if (this.stack.get_visible_child_name() !== "preview") {
-                    this._toolbar.set_overview_mode();
-                }
-            }));
+        this._favoritesView.bind_model(store.favorites);
+        this._favoritesView.connect('item-activated', this.viewArticle.bind(this));
 
-        let panels = [];
+        this._archiveView.bind_model(store.archive);
+        this._archiveView.connect('item-activated', this.viewArticle.bind(this));
 
-        panels[0] = new Views.OverView(Articles.Collections.RECENT, 'My List', this._toolbar);
-        panels[1] = new Views.OverView(Articles.Collections.FAVORITES, 'Favorites', this._toolbar);
-        panels[2] = new Views.OverView(Articles.Collections.ARCHIVE, 'Archive', this._toolbar);
-
-        panels.forEach(Lang.bind(this, function(view) {
-            this.stack.add_titled(view.widget, view.title, view.title);
-        }));
-
-        let preview = new Views.Preview(this._toolbar);
-        this.stack.add_named(preview.widget, "preview");
-
-        Application.articles.connect('active-changed',
-            Lang.bind(this, function(articles, item) {
-                if (item !== null) {
-                    this.stack.set_visible_child_name("preview");
-                    return;
-                }
-
-                this.stack.set_visible_child(panels[0].widget);
-        }));
+        this._webview = new WebKit.WebView();
+        this._articleViewSW.add(this._webview);
     },
 
-    _saveItemDialog: function() {
-        let builder = new Gtk.Builder();
-        builder.add_from_resource('/bolso/resources/save-item-dialog.ui');
+    viewArticle: function(view, article) {
+        this.state = STATE.ARTICLE_VIEW;
 
-        let dialog = builder.get_object('save-item-dialog');
+        this._articleTitle.set_label(article.resolved_title);
+        this._webview.open(article.resolved_url);
+    },
 
-        let urlEntry = builder.get_object('url-entry');
-        let saveButton = builder.get_object('save-item-button');
-        saveButton.connect('clicked', Lang.bind(this, function() {
-            Application.pocketApi.addAsync(urlEntry.text,
-                Lang.bind(this, function(item) {
-                    Application.articles.addItem(0, new Articles.Item(item));
-                    dialog.destroy();
-                }));
-            }));
-        dialog.show_all();
+    showCollectionView: function() {
+        this._webview.open("about:blank");
+        this.state = STATE.COLLECTION_VIEW;
     },
 
     _about: function() {

@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="Gjs_Window" parent="GtkApplicationWindow">
+    <property name="title">Bolso</property>
     <property name="width-request">600</property>
     <property name="height-request">500</property>
-    <property name="window-position">GTK_WIN_POSITION_CENTER</property>
+    <property name="window-position">GTK_WIN_POS_CENTER</property>
 
     <child type="titlebar">
-      <object class="GtkHeaderBar" id="header-bar">
+      <object class="GtkHeaderBar">
         <property name="can_focus">False</property>
         <property name="visible">True</property>
         <property name="show-close-button">True</property>
 
         <child>
-          <object class="GtkButton" id="back-button">
+          <object class="GtkButton" id="goBackButton">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="valign">center</property>
@@ -22,7 +23,7 @@
             </style>
 
             <child>
-              <object class="GtkImage" id="back-button-image">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="icon-name">go-previous-symbolic</property>
@@ -36,8 +37,22 @@
         </child>
 
         <child type="title">
-          <object class="GtkStackSwitcher" id="stack-switcher">
+          <object class="GtkStack" id="titleBar">
             <property name="visible">True</property>
+            <property name="transition-type">GTK_STACK_TRANSITION_TYPE_SLIDE_UP_DOWN</property>
+
+            <child>
+              <object class="GtkStackSwitcher" id="stackSwitcher">
+                <property name="visible">True</property>
+                <property name="stack">collections</property>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkLabel" id="articleTitle">
+                <property name="visible">True</property>
+              </object>
+            </child>
           </object>
         </child>
 
@@ -65,6 +80,79 @@
         </child>
       </object>
     </child>
+
+    <child>
+      <object class="GtkStack" id="stack">
+        <property name="visible">True</property>
+
+        <child>
+          <object class="GtkStack" id="collectionView">
+            <property name="visible">True</property>
+
+            <child>
+              <object class="GtkStack" id="collections">
+                <property name="visible">True</property>
+                <property name="transition-type">GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT_RIGHT</property>
+
+                <child>
+                  <object class="Gjs_View" id="myListView">
+                    <property name="visible">True</property>
+                  </object>
+                  <packing>
+                    <property name="title" translatable="yes">My List</property>
+                  </packing>
+                </child>
+
+                <child>
+                  <object class="Gjs_View" id="favoritesView">
+                    <property name="visible">True</property>
+                  </object>
+                  <packing>
+                    <property name="title" translatable="yes">Favorites</property>
+                  </packing>
+                </child>
+
+                <child>
+                  <object class="Gjs_View" id="archiveView">
+                    <property name="visible">True</property>
+                  </object>
+                  <packing>
+                    <property name="title" translatable="yes">Archive</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkStack" id="articleView">
+            <property name="visible">True</property>
+
+            <child>
+              <object class="GtkScrolledWindow" id="articleViewSW">
+                <property name="visible">True</property>
+                <property name="hscrollbar-policy">GTK_POLICY_NEVER</property>
+              </object>
+            </child>
+          </object>
+        </child>
+
+          <child>
+            <object class="GtkStack" id="emptyState">
+              <property name="visible">True</property>
+
+              <child>
+                <object class="GtkLabel">
+                  <property name="visible">True</property>
+                  <property name="label">Empty State</property>
+                </object>
+              </child>
+            </object>
+          </child>
+      </object>
+    </child>
+
   </template>
 
   <object class="GtkPopover" id="preview-action-buttons">

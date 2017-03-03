@@ -27,18 +27,14 @@ pkg.require({ 'Gdk': '3.0',
 
 const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
+const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
 
-const Articles = imports.articles;
 const Pocket = imports.pocket;
 const Util = imports.util;
+const Store = imports.store;
 const Window = imports.window;
-
-let pocketApi = null;
-let articles = [];
-
-const QUERY_SIZE = 20;
 
 function initEnvironment() {
     window.getApp = function() {
@@ -77,60 +73,20 @@ const Application = new Lang.Class({
                             activate: this._onQuit }]);
         this._initAppMenu();
 
-        articles = new Articles.Articles();
         Pocket.authenticate(Lang.bind(this, function(consumer_key, access_token) {
-            pocketApi = new Pocket.Api();
+            let pocketApi = new Pocket.Api();
             let status = pocketApi.set_credentials(consumer_key, access_token);
 
             if (status !== Pocket.PocketStatusCodes.REQUEST_SUCCESSFUL) {
-                this._initGettingStarted();
+                this._window.state = Window.STATE.EMPTY_VIEW;
                 return;
             }
 
-            this._retrieveArticles();
+            let store = Store.getDefault();
+            store.retrieveArticles(pocketApi);
         }));
 
-        this._window = new Window.MainWindow({ application: this });
-    },
-
-    _retrieveArticles: function() {
-        pocketApi.retrieveAsync("state", "unread", QUERY_SIZE, 0,
-            Lang.bind(this, this._addListToCollection));
-
-        pocketApi.retrieveAsync("favorite", "1", QUERY_SIZE, 0,
-            Lang.bind(this, this._addListToCollection));
-
-        pocketApi.retrieveAsync("state", "archive", QUERY_SIZE, 0,
-            Lang.bind(this, this._addListToCollection));
-    },
-
-    _addListToCollection: function(list) {
-        for (let idx in list) {
-            articles.addItem(new Articles.Item(list[idx]));
-        }
-    },
-
-    _initGettingStarted: function() {
-        let dialog = new Gtk.Dialog({ transient_for: this._window,
-                                      modal: true,
-                                      destroy_with_parent: true,
-                                      default_width: 600,
-                                      default_height: 100,
-                                      title: _("Setup your Pocket account"),
-                                      use_header_bar: true });
-        let closeButton = dialog.add_button('gtk-close', Gtk.ResponseType.CLOSE);
-        dialog.set_default_response(Gtk.ResponseType.CLOSE);
-
-        closeButton.connect('button-press-event', Lang.bind(this, function() {
-            dialog.destroy();
-            this._onQuit();
-        }));
-
-        let contentArea = dialog.get_content_area();
-        let label = new Gtk.Label({ label: _("Go to Online Accounts and add a Pocket account.") });
-        contentArea.add(label);
-
-        dialog.show_all();
+        this._window = new Window.Window({ application: this });
     },
 
     vfunc_activate: function() {
