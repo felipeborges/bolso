@@ -143,9 +143,40 @@
               <property name="visible">True</property>
 
               <child>
-                <object class="GtkLabel">
+                <object class="GtkBox">
                   <property name="visible">True</property>
-                  <property name="label">Empty State</property>
+                  <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+                  <property name="valign">GTK_ALIGN_CENTER</property>
+
+                  <child>
+                    <object class="GtkImage">
+                      <property name="visible">True</property>
+                      <property name="icon-name">view-paged-symbolic</property>
+                      <property name="pixel-size">192</property>
+                      <property name="margin">20</property>
+                    </object>
+                  </child>
+
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="visible">True</property>
+                      <property name="label" translatable="yes">No Articles found</property>
+                      <attributes>
+                        <attribute name="weight" value="PANGO_WEIGHT_BOLD" />
+                        <attribute name="scale" value="1.2" />
+                      </attributes>
+                    </object>
+                  </child>
+
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="visible">True</property>
+                      <property name="label" translatable="yes">Articles from your Pocket Account will appear here.</property>
+                      <style>
+                        <class name="dim-label"/>
+                      </style>
+                    </object>
+                  </child>
                 </object>
               </child>
             </object>
