@@ -20,40 +20,76 @@
 const GObject = imports.gi.GObject;
 const Lang = imports.lang;
 
-const Collections = {
-    RECENT: 0,
-    FAVORITES: 1,
-    ARCHIVE: 2
-};
+const INT32_MAX = (2147483647);
 
 const Item = new Lang.Class({
     Name: 'Item',
     Extends: GObject.Object,
+    Properties: {
+      'item_id': GObject.ParamSpec.int('item_id', 'Item ID',
+          'Unique Article identifier',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          0, INT32_MAX, 0),
+      'resolved_url': GObject.ParamSpec.string('resolved_url', 'Resolved URL',
+          'The final url of the item.',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          ''),
+      'given_title': GObject.ParamSpec.string('given_title', 'Given Title',
+          'The title that was saved along with the item.',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          ''),
+      'resolved_title': GObject.ParamSpec.string('resolved_title', 'Resolved Title',
+          'The title that Pocket found for the item when it was parsed.',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          ''),
+      'favorite': GObject.ParamSpec.boolean('favorite', 'Favorite',
+          'If the item is favorited.',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          false),
+      'status': GObject.ParamSpec.int('status', 'Status',
+          '0, 1, 2 - 1 if the item is archived - 2 if the item should be deleted',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          0, 2, 0),
+      'excerpt': GObject.ParamSpec.string('excerpt', 'Excerpt',
+          'The first few lines of the item (articles only).',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          ''),
+      'is_article': GObject.ParamSpec.boolean('is_article', 'Is Article',
+          'if the item is an article.',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          false),
+      'has_image': GObject.ParamSpec.int('has_image', 'Has Image',
+          '0, 1, or 2 - 1 if the item has images in it - 2 if the item is an image.',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          0, 2, 0),
+      'has_video': GObject.ParamSpec.int('has_video', 'Has Video',
+          '0, 1, or 2 - 1 if the item has videos in it - 2 if the item is a video.',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          0, 2, 0),
+      'word_count': GObject.ParamSpec.int('word_count', 'Word Count',
+          'How many words are in the article.',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          0, INT32_MAX, 0),
+      'tags': GObject.ParamSpec.string('tags', 'Tags',
+          'A JSON object of the user tags associated with the item.',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          ''),
+      'authors': GObject.ParamSpec.string('tags', 'Tags',
+          'A JSON object listing all of the authors associated with the item.',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          ''),
+      'images': GObject.ParamSpec.string('tags', 'Tags',
+          'A JSON object listing all of the images associated with the item.',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          ''),
+      'videos': GObject.ParamSpec.string('tags', 'Tags',
+          'A JSON object listing all of the videos associated with the item.',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTURCT,
+          ''),
+    },
 
     _init: function(item) {
         this.parent();
-
-        this.item_id = null;
-        this.resolved_url = "";
-        this.given_title = "";
-        this.resolved_title = null;
-        this.favorite = null;
-        this.status = null;
-        this.exercpt = null;
-
-        this.is_article = false;
-        this.has_image = false;
-        this.has_video = false;
-
-        this.word_count = null;
-        this.tags = null;
-        this.authors = null;
-        this.images = null;
-        this.videos = null;
-
-        /* Index used for local reference. Not to be confused with item_id which
-         * is how Pocket references an Item */
-        this.index = null;
 
         this.populateFromJsonObject(item);
     },
