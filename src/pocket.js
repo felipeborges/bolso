@@ -108,27 +108,17 @@ const Api = new Lang.Class({
         }));
     },
 
-    retrieveAsync: function(action, value, count, since, offset, callback) {
+    retrieve: function(since, callback) {
         let retrieveCall = this._newCall();
         retrieveCall.set_function("v3/get");
 
-        if (count != null)
-            retrieveCall.add_param("count", count.toString());
-        if (since != null)
-            retrieveCall.add_param("since", since.toString());
-        if (offset !== null) {
-            retrieveCall.add_param("offset", offset.toString());
-        }
-
-        if ((action !== null) && (value !== null)) {
-            retrieveCall.add_param(action, value);
-        }
-
+        retrieveCall.add_param("state", "all");
+        retrieveCall.add_param("since", since.toString());
         retrieveCall.invoke_async(null, Lang.bind(this, function(proxyCall) {
             try {
                 let jsonResponse = JSON.parse(proxyCall.get_payload());
                 if (jsonResponse['status']) {
-                    callback(jsonResponse.list, jsonResponse['since']);
+                    callback(jsonResponse.list, jsonResponse['since'].toString());
                 } else {
                     callback(false);
                 }

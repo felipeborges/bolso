@@ -112,11 +112,8 @@ const Store = new Lang.Class({
 
     retrieveArticles() {
         let since = this._settings.get_string('pocket-last-update');
-        this._pocketApi.retrieveAsync("state", "all", null, since, null,
-          (function(list, since) {
-            if (since) {
-                this._settings.set_string('pocket-last-update', since.toString());
-            }
+        this._pocketApi.retrieve(since, (function(list, since) {
+            this._settings.set_string('pocket-last-update', since);
 
             for (let idx in list) {
                 let item = new Articles.Item();
