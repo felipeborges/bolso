@@ -85,6 +85,7 @@ const Api = new Lang.Class({
         newCall.add_param("consumer_key", this.consumer_key);
         newCall.add_param("access_token", this.access_token);
         newCall.add_param("detailType", "complete");
+        newCall.add_param("tags", "1");
 
         return newCall;
     },
