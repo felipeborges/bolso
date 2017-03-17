@@ -103,8 +103,8 @@ const Store = new Lang.Class({
         if (article.isArchived()) {
             this._archive.insert(0, article);
         } else {
-            if (article.isFavorite()) { // FIXME
-                this._favorites.insert(0, article)
+            if (article.isFavorite()) {
+                this._favorites.insert(0, article);
             }
             this._mylist.insert(0, article);
         }
@@ -120,7 +120,7 @@ const Store = new Lang.Class({
             for (let idx in list) {
                 this._addArticle(new Articles.Item(list[idx]));
             }
-          }).bind(this));
+        }).bind(this));
     },
 
     close: function() {
