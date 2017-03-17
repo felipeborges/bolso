@@ -17,6 +17,8 @@
  */
 
 const Lang = imports.lang;
+const Gio = imports.gi.Gio;
+const GLib = imports.gi.GLib;
 const GObject = imports.gi.GObject;
 const Gom = imports.gi.Gom;
 
@@ -59,7 +61,21 @@ const Db = new Lang.Class({
     _init: function() {
         this.parent();
 
-        this.open_async("/tmp/mytest.db", this._onOpened.bind(this));
+        this.open_async(this._getDbPath(), this._onOpened.bind(this));
+    },
+
+    _getDbPath: function() {
+        let cachePath = GLib.build_filenamev([
+            GLib.get_user_cache_dir(),
+            "/bolso/", /* TODO: dynamically get application name. */
+        ]);
+
+        try {
+            let dir = Gio.File.new_for_path(cachePath);
+            dir.make_directory_with_parents(null);
+        } catch (e) { }
+
+        return GLib.build_filenamev([cachePath, "articles.db"]);
     },
 
     _onOpened: function(adapter, result) {
