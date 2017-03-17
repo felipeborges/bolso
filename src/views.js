@@ -120,10 +120,6 @@ const ListViewItem = new Lang.Class({
             return;
         }
 
-        if (this.article.has_image != "1") {
-            this._image.set_from_pixbuf(fallbackPixbuf);
-            return;
-        }
         if (!this.article.images)
             return;
         let url = this.article.images[1].src;
