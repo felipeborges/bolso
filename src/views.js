@@ -71,11 +71,19 @@ const View = new Lang.Class({
         return widget;
     },
 
-    _updateHeaderFunction: function() {
-        let widget = new Gtk.Separator();
-        widget.show();
+    _updateHeaderFunction: function(row, before) {
+        if (!before) {
+            row.set_header(null);
+            return;
+        }
 
-        return widget;
+        let current = row.get_header();
+        if (!current) {
+            current = new Gtk.Separator({
+                orientation: Gtk.Orientation.HORIZONTAL
+            });
+            row.set_header(current);
+        }
     },
 });
 
