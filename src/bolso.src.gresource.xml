@@ -3,6 +3,7 @@
   <gresource prefix="/bolso/js">
     <file>application.js</file>
     <file>articles.js</file>
+    <file>db.js</file>
     <file>pocket.js</file>
     <file>params.js</file>
     <file>util.js</file>
