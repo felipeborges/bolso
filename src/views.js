@@ -65,7 +65,7 @@ const View = new Lang.Class({
         let widget = new ListViewItem();
         widget.article = item;
         widget.title = item.resolved_title;
-        widget.excerpt = item.excerpt;
+        widget.excerpt = item.excerpt.substring(0, 160) + "…";
         widget.updateImage();
 
         return widget;
