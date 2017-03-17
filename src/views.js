@@ -30,8 +30,8 @@ const Articles = imports.articles;
 const Util = imports.util;
 
 const FALLBACK_THUMBNAIL = "/bolso/icons/fallback.jpg";
-const THUMB_WIDTH = 95;
-const THUMB_HEIGHT = 80;
+const THUMB_WIDTH = 128;
+const THUMB_HEIGHT = 85;
 
 const View = new Lang.Class({
     Name: 'View',

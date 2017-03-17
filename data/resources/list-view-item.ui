@@ -10,8 +10,9 @@
           <child>
             <object class="GtkImage" id="image">
               <property name="visible">True</property>
-              <property name="width-request">95</property>
-              <property name="height-request">80</property>
+              <property name="valign">GTK_ALIGN_START</property>
+              <property name="width-request">128</property>
+              <property name="height-request">85</property>
             </object>
           </child>
 
