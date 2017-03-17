@@ -18,11 +18,12 @@
 
 const Gio = imports.gi.Gio;
 const GObject = imports.gi.GObject;
+const Gom = imports.gi.Gom;
 const Lang = imports.lang;
 
 const Articles = imports.articles;
-
-const QUERY_SIZE = 20;
+const Db = imports.db;
+const Util = imports.util;
 
 let store_instance = null;
 
@@ -35,7 +36,7 @@ function getDefault() {
 
 const Store = new Lang.Class({
     Name: 'Store',
-    Extends: GObject.Object,
+    Extends: Gom.Adapter,
     Properties: {
       'mylist': GObject.ParamSpec.object('mylist', 'My List',
             'Articles which were recently added.',
@@ -49,6 +50,14 @@ const Store = new Lang.Class({
             'Articles which were marked as favorites.',
             GObject.ParamFlags.READABLE,
             Gio.ListStore),
+      'db': GObject.ParamSpec.object('db', 'Database',
+            'The interface with the underlying database.',
+            GObject.ParamFlags.READABLE,
+            Db.Db),
+      'pocketApi': GObject.ParamSpec.object('pocketApi', 'Pocket API',
+            'Pocket API endpoint.',
+            GObject.ParamFlags.READABLE,
+            Db.Db),
     },
 
     get mylist() {
@@ -63,29 +72,68 @@ const Store = new Lang.Class({
         return this._favorites;
     },
 
+    set pocketApi(pocketApi) {
+        this._pocketApi = pocketApi;
+    },
+
     _init: function() {
+        this.parent();
+
         this._mylist = new Gio.ListStore(GObject.TYPE_OBJECT);
         this._archive = new Gio.ListStore(GObject.TYPE_OBJECT);
         this._favorites = new Gio.ListStore(GObject.TYPE_OBJECT);
+
+        this._pocketApi = null;
+
+        this._db = Db.getDefault();
+        this._db.connect('db-ready', this._loadArticles.bind(this));
+
+        this._settings = Util.getSettings("com.github.felipeborges.bolso",
+                                          "/com/github/felipeborges/bolso/");
     },
 
-    retrieveArticles(pocketApi) {
-        pocketApi.retrieveAsync("state", "unread", QUERY_SIZE, 0,
-          (function(list) {
-             for (let idx in list)
-               this._mylist.append(new Articles.Item(list[idx]));
-           }).bind(this));
+    _loadArticles: function(repository) {
+        let object_type = new Articles.Item();
+        let filter = Gom.Filter.new_is_not_null (object_type, "item-id");
 
-        pocketApi.retrieveAsync("favorite", "1", QUERY_SIZE, 0,
-          (function(list) {
-             for (let idx in list)
-               this._archive.append(new Articles.Item(list[idx]));
-           }).bind(this));
-
-        pocketApi.retrieveAsync("state", "archive", QUERY_SIZE, 0,
-          (function(list) {
-             for (let idx in list)
-               this._favorites.append(new Articles.Item(list[idx]));
-           }).bind(this));
+        this._db.loadObjects(object_type, filter, this._addArticle.bind(this));
     },
+
+    _addArticle: function(article) {
+        if (article.isArchived()) {
+            this._archive.insert(0, article);
+        } else {
+            if (article.isFavorite()) { // FIXME
+                this._favorites.insert(0, article)
+            }
+            this._mylist.insert(0, article);
+        }
+    },
+
+    retrieveArticles() {
+        let since = this._settings.get_string('pocket-last-update');
+        this._pocketApi.retrieveAsync("state", "all", null, since, null,
+          (function(list, since) {
+            if (since) {
+                this._settings.set_string('pocket-last-update', since.toString());
+            }
+
+            for (let idx in list) {
+                let item = new Articles.Item();
+                item.populateFromJsonObject(list[idx]);
+                this._db.saveObject(item);
+                this._addArticle(item);
+            }
+          }).bind(this));
+    },
+
+    close: function() {
+        this._db.close_async(Lang.bind(this, function(adapter, result) {
+            try {
+                this._db.close_finish(result);
+            } catch (e) {
+                log(e);
+            }
+        }));
+    }
 });

@@ -73,6 +73,8 @@ const Application = new Lang.Class({
                             activate: this._onQuit }]);
         this._initAppMenu();
 
+        this._window = new Window.Window({ application: this });
+
         Pocket.authenticate(Lang.bind(this, function(consumer_key, access_token) {
             let pocketApi = new Pocket.Api();
             let status = pocketApi.set_credentials(consumer_key, access_token);
@@ -83,20 +85,22 @@ const Application = new Lang.Class({
             }
 
             let store = Store.getDefault();
-            store.retrieveArticles(pocketApi);
+            store.pocketApi = pocketApi;
         }));
-
-        this._window = new Window.Window({ application: this });
     },
 
     vfunc_activate: function() {
         if (this._window) {
             this._window.present();
+            this._window.bindModel(Store.getDefault());
         }
     },
 
     vfunc_shutdown: function() {
         this.parent();
+
+        let store = Store.getDefault();
+        store.close();
     }
 });
 

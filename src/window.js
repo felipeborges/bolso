@@ -51,6 +51,7 @@ const Window = new Lang.Class({
       'stack',
       'emptyState',
       'goBackButton',
+      'refreshButton',
       'collectionView',
       'articleView',
       'titleBar',
@@ -71,6 +72,7 @@ const Window = new Lang.Class({
                 this._stack.set_visible_child(this._articleView);
                 this._titleBar.set_visible_child(this._articleTitle);
                 this._goBackButton.show();
+                this._refreshButton.hide();
                 this._webview.show();
                 break;
             case STATE.COLLECTION_VIEW:
@@ -78,6 +80,7 @@ const Window = new Lang.Class({
                 this._goBackButton.hide();
                 this._titleBar.set_visible_child(this._stackSwitcher);
                 this._stackSwitcher.set_sensitive(true);
+                this._refreshButton.show();
                 break;
             case STATE.EMPTY_VIEW:
                 this._stack.set_visible_child(this._emptyState);
@@ -108,9 +111,13 @@ const Window = new Lang.Class({
 
         /* FIXME: connect buttons in the template file instead. */
         this._goBackButton.connect('clicked', this.showCollectionView.bind(this));
+        this._refreshButton.connect('clicked', this.refresh.bind(this));
 
-        let store = Store.getDefault();
+        this._webview = new WebKit.WebView();
+        this._articleViewSW.add(this._webview);
+    },
 
+    bindModel: function(store) {
         this._myListView.bind_model(store.mylist);
         this._myListView.connect('item-activated', this.viewArticle.bind(this));
 
@@ -119,9 +126,6 @@ const Window = new Lang.Class({
 
         this._archiveView.bind_model(store.archive);
         this._archiveView.connect('item-activated', this.viewArticle.bind(this));
-
-        this._webview = new WebKit.WebView();
-        this._articleViewSW.add(this._webview);
     },
 
     viewArticle: function(view, article) {
@@ -134,6 +138,11 @@ const Window = new Lang.Class({
     showCollectionView: function() {
         this._webview.open("about:blank");
         this.state = STATE.COLLECTION_VIEW;
+    },
+
+    refresh: function() {
+        let store = Store.getDefault();
+        store.retrieveArticles();
     },
 
     _about: function() {
