@@ -108,11 +108,14 @@ const Api = new Lang.Class({
         }));
     },
 
-    retrieveAsync: function(action, value, count, offset, callback) {
+    retrieveAsync: function(action, value, count, since, offset, callback) {
         let retrieveCall = this._newCall();
         retrieveCall.set_function("v3/get");
 
-        retrieveCall.add_param("count", count.toString());
+        if (count != null)
+            retrieveCall.add_param("count", count.toString());
+        if (since != null)
+            retrieveCall.add_param("since", since.toString());
         if (offset !== null) {
             retrieveCall.add_param("offset", offset.toString());
         }
@@ -125,7 +128,7 @@ const Api = new Lang.Class({
             try {
                 let jsonResponse = JSON.parse(proxyCall.get_payload());
                 if (jsonResponse['status']) {
-                    callback(jsonResponse.list);
+                    callback(jsonResponse.list, jsonResponse['since']);
                 } else {
                     callback(false);
                 }
