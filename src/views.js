@@ -125,6 +125,8 @@ const ListViewItem = new Lang.Class({
             return;
         }
 
+        if (!this.article.images)
+            return;
         let url = this.article.images[1].src;
         Util.downloadImageAsync(url, Lang.bind(this, function(path) {
             try {
