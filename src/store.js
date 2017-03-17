@@ -108,6 +108,8 @@ const Store = new Lang.Class({
             }
             this._mylist.insert(0, article);
         }
+
+        this._db.saveObject(article);
     },
 
     retrieveArticles() {
@@ -116,10 +118,7 @@ const Store = new Lang.Class({
             this._settings.set_string('pocket-last-update', since);
 
             for (let idx in list) {
-                let item = new Articles.Item();
-                item.populateFromJsonObject(list[idx]);
-                this._db.saveObject(item);
-                this._addArticle(item);
+                this._addArticle(new Articles.Item(list[idx]);
             }
           }).bind(this));
     },

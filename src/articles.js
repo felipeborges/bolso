@@ -93,12 +93,15 @@ const Item = new Lang.Class({
           ''),
     },
 
-    _init: function() {
+    _init: function(object) {
         this.parent();
 
         Gom.Resource.set_table.call(this, 'articles');
         Gom.Resource.set_primary_key.call(this, 'id');
         Gom.Resource.set_unique.call(this, 'id');
+
+        if (object)
+            this.populateFromJsonObject(object)
     },
 
     _instance_init: function() {
