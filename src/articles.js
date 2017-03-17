@@ -91,6 +91,10 @@ const Item = new Lang.Class({
           'A JSON object listing all of the videos associated with the item.',
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
           ''),
+      'cached_thumb': GObject.ParamSpec.string('cached_thumb', 'Cached Thumbnail',
+          'The locally stored image.',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          ''),
     },
 
     _init: function(object) {
@@ -100,6 +104,7 @@ const Item = new Lang.Class({
         Gom.Resource.set_primary_key.call(this, 'id');
         Gom.Resource.set_unique.call(this, 'id');
 
+        this.cached_thumb = null;
         if (object)
             this.populateFromJsonObject(object)
     },
@@ -110,7 +115,7 @@ const Item = new Lang.Class({
 
     populateFromJsonObject: function(object) {
         for (let prop in object) {
-            this[prop] = JSON.stringify(object[prop]);
+            this[prop] = object[prop];
         }
     },
 
@@ -144,5 +149,10 @@ const Item = new Lang.Class({
 
     open: function() {
         log("open");
+    },
+
+    storeThumb: function(path) {
+        this.cached_thumb = path;
+        this.save_sync();
     }
 });

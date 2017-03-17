@@ -115,26 +115,32 @@ const ListViewItem = new Lang.Class({
     },
 
     updateImage: function() {
-        let fallbackPixbuf = GdkPixbuf.Pixbuf.new_from_resource_at_scale(FALLBACK_THUMBNAIL,
-                                                                         THUMB_WIDTH,
-                                                                         THUMB_HEIGHT,
-                                                                         false);
+        if (this.article.cached_thumb) {
+            this._setPixbuf(this.article.cached_thumb);
+            return;
+        }
 
         if (this.article.has_image != "1") {
             this._image.set_from_pixbuf(fallbackPixbuf);
             return;
         }
-
         if (!this.article.images)
             return;
         let url = this.article.images[1].src;
         Util.downloadImageAsync(url, Lang.bind(this, function(path) {
-            try {
-                let pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(path, THUMB_WIDTH, THUMB_HEIGHT, false);
-                this._image.set_from_pixbuf(pixbuf);
-            } catch(e) {
-                this._image.set_from_pixbuf(fallbackPixbuf);
-            }
+            this._setPixbuf(path);
+            this.article.storeThumb(path);
         }));
     },
+
+    _setPixbuf: function(path) {
+        try {
+            let final_path = (this.article.has_image == "1") ? path : FALLBACK_THUMBNAIL;
+
+            let pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(final_path, THUMB_WIDTH, THUMB_HEIGHT, false);
+            this._image.set_from_pixbuf(pixbuf);
+        } catch(e) {
+            log(e);
+        }
+    }
 });

@@ -118,7 +118,7 @@ const Store = new Lang.Class({
             this._settings.set_string('pocket-last-update', since);
 
             for (let idx in list) {
-                this._addArticle(new Articles.Item(list[idx]);
+                this._addArticle(new Articles.Item(list[idx]));
             }
           }).bind(this));
     },
