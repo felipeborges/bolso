@@ -128,15 +128,14 @@ const Item = new Lang.Class({
     },
 
     getDescription: function() {
+        let text = "";
         if (this.excerpt) {
-            return this.excerpt;
+            text = this.excerpt.substring(0, 160);
+        } else if (this.resolved_url) {
+            text = this.resolved_url.substring(0, 160);
         }
 
-        if (this.resolved_url) {
-            return this.resolved_url;
-        }
-
-        return "";
+        return text + "…";
     },
 
     isArchived: function() {

@@ -71,8 +71,8 @@ const View = new Lang.Class({
     _createWidgetFunction: function(item) {
         let widget = new ListViewItem();
         widget.article = item;
-        widget.title = item.resolved_title;
-        widget.excerpt = item.excerpt.substring(0, 160) + "…";
+        widget.title = item.getTitle();
+        widget.excerpt = item.getDescription();
         widget.updateImage();
 
         return widget;
