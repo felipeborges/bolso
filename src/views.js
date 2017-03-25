@@ -27,6 +27,7 @@ const WebKit = imports.gi.WebKit;
 
 const Application = imports.application;
 const Articles = imports.articles;
+const Store = imports.store;
 const Util = imports.util;
 
 const FALLBACK_THUMBNAIL = "/bolso/icons/fallback.jpg";
@@ -39,6 +40,8 @@ const View = new Lang.Class({
     Template: 'resource:///bolso/resources/views.ui',
     InternalChildren: [
       'listBox',
+      'scrolledWindow',
+      'spinner',
     ],
     Signals: {
       'item-activated': {
@@ -54,6 +57,10 @@ const View = new Lang.Class({
 
             this.emit('item-activated', w.article);
         }).bind(this));
+
+        /* Lazy loading */
+        let scrollbar = this._scrolledWindow.get_vscrollbar();
+        scrollbar.connect('value-changed', this._lazyLoading.bind(this));
     },
 
     bind_model: function(model) {
@@ -83,6 +90,20 @@ const View = new Lang.Class({
                 orientation: Gtk.Orientation.HORIZONTAL
             });
             row.set_header(current);
+        }
+    },
+
+    _lazyLoading: function(scrollbar) {
+        let adjustment = scrollbar.get_adjustment();
+        let value = adjustment.get_value();
+        let upper = adjustment.get_upper();
+        let psize = adjustment.get_page_size();
+
+        if (value >= (upper - psize)) {
+            this._spinner.visible = !this._spinner.visible;
+
+            let store = Store.getDefault();
+            store.loadArticles();
         }
     },
 });

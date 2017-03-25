@@ -4,14 +4,28 @@
     <property name="visible">True</property>
 
     <child>
-      <object class="GtkScrolledWindow">
+      <object class="GtkScrolledWindow" id="scrolledWindow">
         <property name="visible">True</property>
         <property name="hscrollbar-policy">GTK_POLICY_NEVER</property>
 
-
         <child>
-          <object class="GtkListBox" id="listBox">
+          <object class="GtkBox">
             <property name="visible">True</property>
+            <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+
+            <child>
+              <object class="GtkListBox" id="listBox">
+                <property name="visible">True</property>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkSpinner" id="spinner">
+                <property name="visible">False</property>
+                <property name="active">True</property>
+                <property name="margin">40</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>

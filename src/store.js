@@ -86,13 +86,13 @@ const Store = new Lang.Class({
         this._pocketApi = null;
 
         this._db = Db.getDefault();
-        this._db.connect('db-ready', this._loadArticles.bind(this));
+        this._db.connect('db-ready', this.loadArticles.bind(this));
 
         this._settings = Util.getSettings("com.github.felipeborges.bolso",
                                           "/com/github/felipeborges/bolso/");
     },
 
-    _loadArticles: function(repository) {
+    loadArticles: function(repository) {
         let object_type = new Articles.Item();
         let filter = Gom.Filter.new_is_not_null (object_type, "item-id");
 

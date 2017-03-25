@@ -24,6 +24,8 @@ const Gom = imports.gi.Gom;
 
 const Articles = imports.articles;
 
+const QUERY_SIZE = 20;
+
 let db_instance = null;
 
 function getDefault() {
@@ -61,6 +63,7 @@ const Db = new Lang.Class({
     _init: function() {
         this.parent();
 
+        this._offset = 0;
         this.open_async(this._getDbPath(), this._onOpened.bind(this));
     },
 
@@ -119,12 +122,14 @@ const Db = new Lang.Class({
         let group = null;
         try {
             group = this._repository.find_finish (result);
-            if (group) {
-                let count = group.get_count();
-                if (count == 0)
-                    return;
-                group.fetch_async(0, count, this._onResultsLoaded.bind(this));
-            }
+            if (!group)
+                return;
+
+            if (this._offset == 0)
+                this._offset = group.get_count();
+
+            this._offset = this._offset - QUERY_SIZE;
+            group.fetch_async(this._offset, QUERY_SIZE, this._onResultsLoaded.bind(this));
         } catch (e) {
             log ("Db._onLoadCallback " + e);
         }
@@ -134,7 +139,7 @@ const Db = new Lang.Class({
         try {
             let loaded = group.fetch_finish(result);
             if (loaded) {
-                for (let idx = 0; idx < group.get_count(); idx++) {
+                for (let idx = this._offset; idx < this._offset + QUERY_SIZE; idx++) {
                     this._load_objects_callback(group.get_index(idx));
                 }
             }
